@@ -13,6 +13,9 @@ cd frontend
 echo "[DEBUG] Running 'npm install' in `pwd`:"
 npm install
 
+echo "[DEBUG] Removing frontend/package-lock.json:"
+rm frontend/package-lock.json
+
 echo "[DEBUG] Running 'npm build' in `pwd`:"
 npm run build
 
