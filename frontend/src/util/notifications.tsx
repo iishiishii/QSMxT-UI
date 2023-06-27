@@ -15,25 +15,25 @@ export const handleJobNotification = (jobNotification: JobNotification, navigate
     })
   } else if (job.status === JobStatus.COMPLETE) {
     let description = <div />
-    if (job.type == JobType.DICOM_SORT) {
+    if (job.type === JobType.DICOM_SORT) {
       description = (
         <div>
           Dicom conversion will now commence
         </div>
       )
-    } else if (job.type == JobType.DICOM_CONVERT || job.type == JobType.BIDS_COPY) {
+    } else if (job.type === JobType.DICOM_CONVERT || job.type === JobType.BIDS_COPY) {
       description = (
         <div>
           Your subject data is now viewable in the <a onClick={() => {navigate(`/${Page.YourData}`)}}>Your Data Page</a>
         </div>
       )
-    } else if (job.type == JobType.QSM) {
+    } else if (job.type === JobType.QSM) {
       description = (
         <div>
           QSM Images are now viewable in the <a onClick={() => {navigate(`/${Page.Results}`)}}>Results Page</a>
         </div>
       )
-    } else if (job.type == JobType.SEGMENTATION) {
+    } else if (job.type === JobType.SEGMENTATION) {
       description = (
         <div>
           Analysis results are now viewable in the <a onClick={() => {navigate(`/${Page.Results}`)}}>Results Page</a>
