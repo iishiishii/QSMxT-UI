@@ -23,10 +23,10 @@ echo "[DEBUG] API SETUP"
 cd ../api
 
 echo "[DEBUG] Updating package lists via apt-get update..."
-sudo apt-get update
+apt-get update
 
 echo "[DEBUG] Installing libsqlite3-dev"
-sudo apt-get install libsqlite3-dev
+apt-get install libsqlite3-dev
 
 echo "[DEBUG] Installing sqlite3 via npm 'npm install sqlite3 --build-from-source'"
 npm install sqlite3 --build-from-source
