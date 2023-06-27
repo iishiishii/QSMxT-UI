@@ -17,7 +17,7 @@ echo "[DEBUG] Removing package-lock.json:"
 rm package-lock.json
 
 echo "[DEBUG] Running 'npm build' in `pwd`:"
-npm run build
+CI=false npm run build
 
 echo "[DEBUG] API SETUP"
 cd ../api
