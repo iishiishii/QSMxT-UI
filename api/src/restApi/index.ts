@@ -73,7 +73,7 @@ const createRestApi = async (): Promise<http.Server> => {
   const app = express();
   app.use(express.json());
   app.use(cors())
-  app.use(express.static(path.join(process.cwd(), 'public')));
+  app.use(express.static('~/.qsmxt'));
   setupRestApiEndpoints(app);
   const server = http.createServer(app);
   server.listen(SERVER_PORT, () => {
