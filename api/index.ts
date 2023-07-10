@@ -28,7 +28,7 @@ const setup = async () => {
     const databaseSetupPromise = databaseClient.setup();
     [DATABASE_FOLDER, DICOMS_FOLDER, BIDS_FOLDER, QSM_FOLDER, LOGS_FOLDER].forEach((folder: string) => {
       if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder);
+        fs.mkdirSync(folder, { recursive: true });
       }
     });
     const server = await serverPromise;
