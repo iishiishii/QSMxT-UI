@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER } from "../constants";
+import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER, DATABASE_FOLDER } from "../constants";
 import subjectsDto from './subjectsDto';
 import jobsDto from './jobsDto';
 import cohortsDto from './cohortsDto';
@@ -9,7 +9,7 @@ import { setupListeners } from "../qsmxtInstanceHandler";
 import * as sqlite3 from 'sqlite3';
 import path from "path";
 
-const databasepath = path.join(process.cwd() + '/public/database/database');
+const databasepath = path.join(DATABASE_FOLDER, 'database.sqlite');
 const db: sqlite3.Database = new sqlite3.Database(databasepath);
 
 export const runDatabaseQuery2 = async (query: string): Promise<any> => {
