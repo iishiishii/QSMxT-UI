@@ -57,16 +57,18 @@ const getEchosForRun = (sessionFiles: string[], runsPath: string, subject: strin
 const getRunsForSession = (subjectPath: string, subject: string, sessionNumber: string): SubjectRuns => {
   const runs: SubjectRuns = {};
   const runsPath = path.join(subjectPath, `./${sessionNumber}/anat`);
-  const sessionFiles = fs.readdirSync(runsPath);
-  const runNumbers = getRunNumbersForSession(sessionFiles);
-  runNumbers.forEach((runNumber: string) => {
-    const echos = getEchosForRun(sessionFiles, runsPath, subject, sessionNumber, runNumber);
-    if (Object.keys(echos).length) {
-      runs[runNumber] = {
-        echos
+  if (fs.existsSync(runsPath)) {
+    const sessionFiles = fs.readdirSync(runsPath);
+    const runNumbers = getRunNumbersForSession(sessionFiles);
+    runNumbers.forEach((runNumber: string) => {
+      const echos = getEchosForRun(sessionFiles, runsPath, subject, sessionNumber, runNumber);
+      if (Object.keys(echos).length) {
+        runs[runNumber] = {
+          echos
+        }
       }
-    }
-  })
+    })
+  }
   return runs;
 }
 
