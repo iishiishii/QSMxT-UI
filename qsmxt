@@ -16,6 +16,8 @@ trap handle_interrupt INT
 pkill -f "python3 -m http.server 8080"
 pkill -f "ts-node index.ts"
 
+mkdir -p "${HOME}/.qsmxt/dicoms" "${HOME}/.qsmxt/bids" "${HOME}/.qsmxt/qsm" "${HOME}/.qsmxt/logs" "${HOME}/.qsmxt/database"
+
 # Start backend in a subshell with its working directory
 echo "Starting QSMxT Node API..."
 ( cd "${script_dir}/api" && ts-node index.ts ) &
