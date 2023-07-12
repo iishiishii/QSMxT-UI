@@ -1,6 +1,8 @@
 # QSMxT-UI
 
-Prerequisites -> Install node v12.13
+# Dependencies
+
+## Node v12.13
 
 ```bash
 mkdir nodejs12
@@ -11,7 +13,6 @@ rm node-v12.13.0-linux-x64.tar.xz
 echo "export PATH=`pwd`/node-v12.13.0-linux-x64/bin:${PATH}" >> ~/.bashrc
 source ~/.bashrc
 ```
-
 ```bash
 $ node --version
 v12.13.0
@@ -19,44 +20,18 @@ $ npm --version
 6.12.0
 ```
 
-# Database
+## sqlite3
+
 ```bash
-cd api/
-sudo apt-get update
 sudo apt-get install libsqlite3-dev
 npm install sqlite3 --build-from-source
 ```
 
-# API
+# Install
 
-Attach visual studio to docker instance and forward port 4000 to the instance
+Install via `setup.sh`.
 
-```bash
-cd api/
-npm install
-npm install -g ts-node
-```
+# Run
 
-To run: `ts-node index.ts`
+Run via `qsmxt`.
 
-# Frontend
-
-Install node node on local machine
-
-```bash
-cd frontend
-npm install
-```
-
-To run: `cd build/ && python3 -m http.server 8080`
-
-# Writeable Folders
-ROOT_PATH/api/public/bids
-
-ROOT_PATH/api/public/dicoms
-
-ROOT_PATH/api/public/database
-
-ROOT_PATH/api/public/logs
-
-ROOT_PATH/api/public/qsm

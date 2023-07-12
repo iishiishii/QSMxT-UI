@@ -55,7 +55,7 @@ const styles = {
 }
 
 const defaultT2ProtocolPatterns = ["*t2starw*", "*qsm*"];
-const defaultT1ProtocolPatterns = ["t1w*"];
+const defaultT1ProtocolPatterns = ["*t1w*"];
 
 const optionPrompt = {
   label: 'Type a value to enter...',

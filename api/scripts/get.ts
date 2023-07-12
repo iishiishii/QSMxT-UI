@@ -1,9 +1,10 @@
 import path from "path";
+import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER, DATABASE_FOLDER } from "../src/constants";
 
 const sqlite3 = require('sqlite3').verbose();
 
 // Open a database connection
-const x = path.join(process.cwd() + '/database')
+const x = path.join(DATABASE_FOLDER, 'database.sqlite')
 const db = new sqlite3.Database(x);
 
 // Execute SELECT query

@@ -1,5 +1,5 @@
 {
-  "igonore": [
+  "ignore": [
     "public/**"
   ],
   "ext": "ts"

@@ -2,7 +2,7 @@ import restApi from "./src/restApi";
 import databaseClient from "./src/databaseClient";
 import logger from "./src/util/logger";
 import qsmxtInstanceHandler from "./src/qsmxtInstanceHandler";
-import { BIDS_FOLDER, DATABASE_FOLDER, DICOMS_FOLDER, LOGS_FOLDER, QSM_FOLDER } from "./src/constants";
+import { PUBLIC_DIR, BIDS_FOLDER, DATABASE_FOLDER, DICOMS_FOLDER, LOGS_FOLDER, QSM_FOLDER } from "./src/constants";
 import fs from "fs";
 import { JobStatus } from "./src/types";
 import jobHandler from "./src/jobHandler";
@@ -26,9 +26,9 @@ const setup = async () => {
   try {
     const serverPromise = restApi.create();
     const databaseSetupPromise = databaseClient.setup();
-    [DATABASE_FOLDER, DICOMS_FOLDER, BIDS_FOLDER, QSM_FOLDER, LOGS_FOLDER].forEach((folder: string) => {
+    [DATABASE_FOLDER, PUBLIC_DIR, DICOMS_FOLDER, BIDS_FOLDER, QSM_FOLDER, LOGS_FOLDER].forEach((folder: string) => {
       if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder);
+        fs.mkdirSync(folder, { recursive: true });
       }
     });
     const server = await serverPromise;
@@ -36,7 +36,6 @@ const setup = async () => {
     await Promise.all([jobHandler.setup(server), delteInProgessJobs()])
     restApi.setStatus('ok');
     logger.green("Completed Setup");
-    open('http://localhost:8080');
   } catch (err) {
     console.log(err);
   }

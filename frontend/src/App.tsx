@@ -166,7 +166,7 @@ const App = () => {
         </Header>
         <div style={{  display: 'flex', flexDirection: 'row', background: '#001529', color: 'rgb(255, 255, 255)'}}>
           <b style={{ fontSize: 32, lineHeight: '64px', minHeight: '64px',  }}>
-            QSMxT v2.1.0
+            QSMxT
           </b>
           <div style={{ width: 112  }}>
             <Image
