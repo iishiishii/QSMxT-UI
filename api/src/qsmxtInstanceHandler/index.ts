@@ -24,25 +24,19 @@ export const setupListeners = (child: ChildProcessWithoutNullStreams, reject: (r
   });
 }
 
-const createQsmxtInstance = async (): Promise<ChildProcessWithoutNullStreams> => {
-  logger.green('Creating QSMxT instance')
-  const qsmxt: any = spawn('/neurocommand/local/fetch_and_run.sh', ['qsmxt', QSMXT_VERSION, QSMXT_DATE ]);
-  await new Promise((resolve, reject) => {
-    setupListeners(qsmxt, () => {});
-    qsmxt.stdout.on('data', (data: any) => {
-      if (data.includes('----------------------------------')) {
-        resolve(null);
-      }
-    });
-  })
-  return qsmxt;
-}
+export const runQsmxtCommand = async (
+  command: string,
+  completionString: string,
+  logFilePath: string | null = null,
+  errorString: string = 'ERROR:'
+) => {
+  // Spawn a new shell process
+  const process = spawn(command, [], { shell: true });
 
-export const runQsmxtCommand = async (command: string, completionString: string, logFilePath: string | null = null, errorString: string = 'ERROR:') => {
-  qsmxtInstance = (await createQsmxtInstance()) as any;
   await new Promise((resolve, reject) => {
-    setupListeners(qsmxtInstance as ChildProcessWithoutNullStreams, reject);
-    (qsmxtInstance as ChildProcessWithoutNullStreams).stdout.on('data', (data) => { 
+    setupListeners(process, reject);
+
+    process.stdout.on('data', (data) => {
       const stringData = data.toString();
       stringData.split('\n').forEach((line: string) => {
         if (line.includes('ERROR:')) {
@@ -56,14 +50,15 @@ export const runQsmxtCommand = async (command: string, completionString: string,
         if (line.includes(errorString)) {
           reject(line);
         }
-      })
+      });
     });
+
     logger.yellow(`Running: "${command}"`);
-    (qsmxtInstance as ChildProcessWithoutNullStreams).stdin.write(command + "\n");
   });
-  (qsmxtInstance as ChildProcessWithoutNullStreams).kill();
-  qsmxtInstance = null;
-} 
+
+  // Kill the process after the command is executed.
+  process.kill();
+};
 
 const killChildProcess = () => {
   if (qsmxtInstance) {
