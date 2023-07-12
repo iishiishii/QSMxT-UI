@@ -62,7 +62,7 @@ const SubjectCard: React.FC = () => {
     const numOfSessions = Object.keys(subject.dataTree.sessions).length;
     const firstRunName = Object.keys(subject.dataTree.sessions[firstSessionName].runs)[0];
     const numberOfRuns = Object.keys(subject.dataTree.sessions[firstSessionName].runs).length;
-    const numberOfEchos = Object.keys(subject.dataTree.sessions[firstSessionName].runs[firstRunName].echos).length;
+    const numberOfEchos = Object.keys(subject.dataTree.sessions[firstSessionName].runs[firstRunName]?.echos ?? {}).length;
     return (
       <div style={{ minWidth: '100%', maxWidth: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
