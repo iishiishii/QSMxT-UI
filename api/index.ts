@@ -36,7 +36,6 @@ const setup = async () => {
     await Promise.all([jobHandler.setup(server), delteInProgessJobs()])
     restApi.setStatus('ok');
     logger.green("Completed Setup");
-    open('http://localhost:8080');
   } catch (err) {
     console.log(err);
   }

@@ -1,4 +1,4 @@
-name: Test setup.bash
+name: Test setup.sh
 on:
   workflow_dispatch:
   repository_dispatch:
@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: v14.17.0
     - uses: actions/checkout@v3
-    - name: Test setup.bash
+    - name: Test setup.sh
       run: |
-        /bin/bash setup.bash
+        /bin/bash setup.sh
         
