@@ -1,11 +1,8 @@
-import { Pool } from "pg";
-import { DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER, DATABASE_FOLDER } from "../constants";
+import { DATABASE_FOLDER } from "../constants";
 import subjectsDto from './subjectsDto';
 import jobsDto from './jobsDto';
 import cohortsDto from './cohortsDto';
 import logger from "../util/logger";
-import { spawn } from "child_process";
-import { setupListeners } from "../qsmxtInstanceHandler";
 import * as sqlite3 from 'sqlite3';
 import path from "path";
 
@@ -100,20 +97,6 @@ const createJobsTable = async () => {
   `)
   console.log('Created table jobs');
 }
-
-// const startDatabase = async () => {
-//   const databaseInitiator: any = spawn('sudo', ['service',  'postgresql', 'start']);
-//   await new Promise((resolve, reject) => {
-//     setupListeners(databaseInitiator,reject);
-//     databaseInitiator.stdout.on('data', (data: any) => {
-//       if (data.toString().includes('done')) {
-//         resolve(null);
-//       }
-//     });
-//   })
-//   databaseInitiator.kill();
-//   logger.green('Started database');
-// }
 
 const setupDatabase = async () => {
   // await startDatabase();
