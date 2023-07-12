@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Get the directory of the script
-script_dir="$(dirname "$0")"
+script_dir="$(cd "$(dirname "$0")"; pwd)"
 
 handle_interrupt(){
     echo "Interrupt received. Shutting down..."

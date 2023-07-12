@@ -11,7 +11,7 @@ echo "[DEBUG] In setup.sh"
 set -e
 
 # Get the directory of the script
-script_dir="$(dirname "$0")"
+script_dir="$(cd "$(dirname "$0")"; pwd)"
 
 echo "[DEBUG] Checking versions..."
 echo "npm version: `npm --version`"
