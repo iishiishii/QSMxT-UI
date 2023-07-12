@@ -5,11 +5,12 @@ const projectRootPath = process.cwd();
 
 export const SERVER_PORT = 5000;
 export const TEMP_FILE_DIRECTORY = path.join(projectRootPath, './tmp');
-export const DICOMS_FOLDER = path.join(os.homedir(), '.qsmxt/dicoms');
-export const BIDS_FOLDER = path.join(os.homedir(), '.qsmxt/bids');
-export const QSM_FOLDER = path.join(os.homedir(), '.qsmxt/qsm');
-export const LOGS_FOLDER = path.join(os.homedir(), '.qsmxt/logs');
-export const DATABASE_FOLDER = path.join(os.homedir(), '.qsmxt/database');
+export const PUBLIC_DIR = path.join(os.homedir(), '.qsmxt');
+export const DICOMS_FOLDER = path.join(PUBLIC_DIR, 'dicoms');
+export const BIDS_FOLDER = path.join(PUBLIC_DIR, 'bids');
+export const QSM_FOLDER = path.join(PUBLIC_DIR, 'qsm');
+export const LOGS_FOLDER = path.join(PUBLIC_DIR, 'logs');
+export const DATABASE_FOLDER = path.join(PUBLIC_DIR, 'database');
 export const QSMXT_VERSION = '2.1.0';
 export const QSMXT_DATE = '20230509';
 export const DATABASE_USER = 'qsmxt';

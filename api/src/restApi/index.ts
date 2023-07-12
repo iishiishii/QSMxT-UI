@@ -7,7 +7,7 @@ import qsm from "./qsmApi";
 import express from "express";
 import path from "path";
 import cors from "cors";
-import { BIDS_FOLDER, DICOMS_FOLDER, QSM_FOLDER, SERVER_PORT } from "../constants";
+import { PUBLIC_DIR, BIDS_FOLDER, DICOMS_FOLDER, QSM_FOLDER, SERVER_PORT } from "../constants";
 import http from "http";
 import fs from "fs";
 
@@ -73,7 +73,7 @@ const createRestApi = async (): Promise<http.Server> => {
   const app = express();
   app.use(express.json());
   app.use(cors())
-  app.use(express.static('~/.qsmxt'));
+  app.use(express.static(PUBLIC_DIR));
   setupRestApiEndpoints(app);
   const server = http.createServer(app);
   server.listen(SERVER_PORT, () => {
