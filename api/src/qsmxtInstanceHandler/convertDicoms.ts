@@ -11,8 +11,8 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
   const { t2starwProtocolPatterns, t1wProtocolPatterns } = parameters;
   logger.green("Starting dicom convert");
   let convertDicomCommand = `run_1_dicomConvert.py ${DICOMS_FOLDER} ${BIDS_FOLDER} --auto_yes`;
-  convertDicomCommand += ` --t2starw_protocol_patterns ${t2starwProtocolPatterns.join(',')}`;
-  convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(',')}`;
+  convertDicomCommand += ` --t2starw_protocol_patterns ${t2starwProtocolPatterns.join(' ')}`;
+  convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(' ')}`;
   const completionString = 'INFO: Finished';
   await runQsmxtCommand(convertDicomCommand, completionString);
   const allSavedSubjectsNames = await database.subjects.get.allNames();

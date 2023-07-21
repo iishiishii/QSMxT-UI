@@ -8,10 +8,10 @@ import fs from "fs";
 const getQsmCmdLineOptions = (subject: string, sessions: string[], runs: string[], pipelineConfig: string) => {
   let options =  `--premade=${pipelineConfig} --auto_yes --subject_pattern ${subject}`;
   if (sessions.length) {
-    options += ` --sessions ${sessions.join(',')}`
+    options += ` --sessions ${sessions.join(' ')}`
   }
   if (runs.length) {
-    options += ` --runs ${runs.join(',')}`
+    options += ` --runs ${runs.join(' ')}`
   }
   return options;
 }
@@ -37,3 +37,4 @@ export const runQsmPipeline = async (id: string, subjects: string[], sessions: s
 }
 
 export default runQsmPipeline;
+
