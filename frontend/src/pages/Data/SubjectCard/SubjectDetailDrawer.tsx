@@ -27,7 +27,7 @@ const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, ses
 
   useEffect(() => {
     if (open) {
-      const echoNumbers = subject.dataTree.sessions[session].runs[run].echos;
+      const echoNumbers = subject.dataTree.sessions[session].runs[run].echoes;
       setSelectedEcho(echoNumbers[0]);
     }
   }, [open])
@@ -95,7 +95,7 @@ const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, ses
   const renderBody = () => {
     console.log(subject);
 
-    const echoNumbers = subject.dataTree.sessions[session].runs[run].echos;
+    const echoNumbers = subject.dataTree.sessions[session].runs[run].echoes;
     console.log(echoNumbers)
 
     const echoOptions = echoNumbers.map(echo => (

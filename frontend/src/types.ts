@@ -1,5 +1,5 @@
 export type SubjectRun = {
-  echos: string[]
+  echoes: string[]
 }
 
 export type SubjectRuns = {

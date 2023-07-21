@@ -26,45 +26,17 @@ const getEchoNumbersForRun = (sessionFiles: string[], runNumber: string): string
   return Array.from(echoNumbers);
 }
 
-// const getMagnitudeAndPhaseForEcho = (runsPath: string, subject: string, sessionNumber: string, runNumber: string, echoNumber: string) => {
-//   const magnitudeMetadataFilePath = path.join(runsPath,`./${subject}_${sessionNumber}_run-${runNumber}_echo-${echoNumber}_part-mag_MEGRE.json`);
-//   const phaseMetadataFilePath = path.join(runsPath, `./${subject}_${sessionNumber}_run-${runNumber}_echo-${echoNumber}_part-phase_MEGRE.json`
-//   );
-//   const magnitude = fs.existsSync(magnitudeMetadataFilePath) && JSON.parse(fs.readFileSync(magnitudeMetadataFilePath, { encoding: 'utf-8' }))
-//   const phase = fs.existsSync(phaseMetadataFilePath) && JSON.parse(fs.readFileSync(phaseMetadataFilePath, { encoding: 'utf-8' }))
-//   return { 
-//     magnitude, 
-//     phase 
-//   }
-// }
-
-const getEchosForRun = (sessionFiles: string[], runsPath: string, subject: string, sessionNumber: string, runNumber: string) => {
-  const echoNumbers = getEchoNumbersForRun(sessionFiles, runNumber);
-  return echoNumbers;
-  // const echos: SubjectEchos = {};
-  // echoNumbers.forEach(echoNumber => {
-  //   const { magnitude, phase } = getMagnitudeAndPhaseForEcho(runsPath, subject, sessionNumber, runNumber, echoNumber);
-  //   if (magnitude && phase ) {
-  //     echos[echoNumber] = {
-  //       magnitude,
-  //       phase
-  //     }
-  //   }
-  // })
-  // return echos;
-}
-
-const getRunsForSession = (subjectPath: string, subject: string, sessionNumber: string): SubjectRuns => {
+const getRunsForSession = (subjectPath: string, sessionNumber: string): SubjectRuns => {
   const runs: SubjectRuns = {};
   const runsPath = path.join(subjectPath, `./${sessionNumber}/anat`);
   if (fs.existsSync(runsPath)) {
     const sessionFiles = fs.readdirSync(runsPath);
     const runNumbers = getRunNumbersForSession(sessionFiles);
     runNumbers.forEach((runNumber: string) => {
-      const echos = getEchosForRun(sessionFiles, runsPath, subject, sessionNumber, runNumber);
-      if (Object.keys(echos).length) {
+      const echoes = getEchoNumbersForRun(sessionFiles, runNumber);
+      if (Object.keys(echoes).length) {
         runs[runNumber] = {
-          echos
+          echoes
         }
       }
     })
@@ -78,7 +50,7 @@ export const getSessionsForSubject = (subject: string): SubjectSessions => {
   const sessionNumbers = fs.readdirSync(subjectPath);
   sessionNumbers.forEach((sessionNumber: string) => {
       sessionsTree[sessionNumber] = {
-        runs: getRunsForSession(subjectPath, subject, sessionNumber)
+        runs: getRunsForSession(subjectPath, sessionNumber)
       }
     });
   return sessionsTree;

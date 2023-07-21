@@ -1,4 +1,4 @@
-export type SubjectEchos = {
+export type Subjectechoes = {
   [echoNumber: string]: {
     magnitude: any,
     phase: any,
@@ -6,7 +6,7 @@ export type SubjectEchos = {
 }
 
 export type SubjectRun = {
-  echos: string[]
+  echoes: string[]
 }
 
 export type SubjectRuns = {

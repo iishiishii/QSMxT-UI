@@ -62,7 +62,7 @@ const SubjectCard: React.FC = () => {
     const numOfSessions = Object.keys(subject.dataTree.sessions).length;
     const firstRunName = Object.keys(subject.dataTree.sessions[firstSessionName].runs)[0];
     const numberOfRuns = Object.keys(subject.dataTree.sessions[firstSessionName].runs).length;
-    const numberOfEchos = Object.keys(subject.dataTree.sessions[firstSessionName].runs[firstRunName]?.echos ?? {}).length;
+    const numberOfEchoes = Object.keys(subject.dataTree.sessions[firstSessionName].runs[firstRunName]?.echoes ?? {}).length;
     return (
       <div style={{ minWidth: '100%', maxWidth: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
@@ -97,8 +97,8 @@ const SubjectCard: React.FC = () => {
           <Col>{numberOfRuns}</Col>
         </Row>
         <Row>
-          <Col span={10}>Number of Echos per Run:</Col>         
-          <Col>{numberOfEchos}</Col>
+          <Col span={10}>Number of echoes per Run:</Col>         
+          <Col>{numberOfEchoes}</Col>
         </Row>
         <Row>
           <Col span={10}>Upload Type:</Col>
