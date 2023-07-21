@@ -14,7 +14,7 @@ const styles = {
   }
 }
 
-const YourData = () => {
+const Data = () => {
   return (
     <Card 
       style={{ marginRight: 14, minHeight:'100%' }}
@@ -39,6 +39,6 @@ const YourData = () => {
   )
 }
 
-export default YourData;
+export default Data;
 
 

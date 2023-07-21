@@ -1,7 +1,7 @@
 import { Layout, Menu, Image } from 'antd';
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from './pages/Home/Home'
-import YourData from './pages/YourData'
+import Data from './pages/Data'
 import Run from './pages/Run'
 import Results from './pages/Results'
 import { useNavigate } from 'react-router-dom';
@@ -26,8 +26,8 @@ const menuItems = [
     icon: <HomeOutlined />
   },
   {
-    key: Page.YourData,
-    label: 'Your Data',
+    key: Page.Data,
+    label: 'Data',
     icon: <FolderOpenOutlined />
   },
   {
@@ -190,7 +190,7 @@ const App = () => {
                   <Routes>
                     <Route path={`/${Page.Home}`} element={<Home />} />
                     <Route path={`/${Page.Run}`} element={<Run />} />
-                    <Route path={`/${Page.YourData}`} element={<YourData />} />
+                    <Route path={`/${Page.Data}`} element={<Data />} />
                     <Route path={`/${Page.Results}`} element={<Results />} />
                     <Route path={'*'} element={<Navigate to={`/${Page.Home}`} replace={true} />} />
                   </Routes>  

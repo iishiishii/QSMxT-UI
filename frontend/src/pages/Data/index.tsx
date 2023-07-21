@@ -4,9 +4,9 @@ import SubjectCard from './SubjectCard';
 import UploadDataCard from './UploadDataCard';
 import PageContainer from '../../containers/PageContainer';
 
-const YourDataPage: React.FC = () => {
+const DataPage: React.FC = () => {
   return (
-    <PageContainer title={"Your Data"} gap={10}>
+    <PageContainer title={"Data"} gap={10}>
       <CohortCard />
       <SubjectCard />
       <UploadDataCard />
@@ -14,4 +14,4 @@ const YourDataPage: React.FC = () => {
   )
 }
 
-export default YourDataPage;
+export default DataPage;

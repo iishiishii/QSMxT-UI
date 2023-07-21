@@ -15,7 +15,7 @@ const CohortTree: React.FC<{}> = () => {
   const [expandedKeys, setExpandedKeys] = useState([]);
 
   useEffect(() => {
-    if (page === Page.YourData || page === Page.Results || page === Page.Home) {
+    if (page === Page.Data || page === Page.Results || page === Page.Home) {
       setSelectedCohorts(selectedCohorts.length ? [selectedCohorts[0]] : []);
     }
     if (page === Page.Run) {
@@ -26,7 +26,7 @@ const CohortTree: React.FC<{}> = () => {
   const selectTreeNode = (selectedCohorts: string[], setSelectedCohorts: (cohorts: string[]) => void, setExpandedKeys: (keys: any) => void, page: Page) => (keys: Key[], info: any) => {
     const selectedKey = info.node.key;
     const [clickedCohort, clickedSubject] = selectedKey.split("&");
-    if (page === Page.YourData || page === Page.Results || page === Page.Home) {
+    if (page === Page.Data || page === Page.Results || page === Page.Home) {
       if (!selectedCohorts.find(cohort => cohort === selectedKey)) {
         setSelectedCohorts([clickedCohort]);
         setExpandedKeys([clickedCohort]); 
@@ -55,8 +55,8 @@ const CohortTree: React.FC<{}> = () => {
   if (!Object.keys(cohorts as Cohorts).length) {
     return <div  style={{ minHeight: 250 }}>
       <div>
-        You currently have no saved Cohorts.<br />
-        Go to <a onClick={() => navigate('/yourData')}>Your Data </a>page to create them and link subjects.
+        Cohorts group together subjects for QSM reconstruction and analysis.<br />
+        Go to <a onClick={() => navigate('/data')}>Data</a> to create a cohort and add subjects.
       </div>
     </div>
   }

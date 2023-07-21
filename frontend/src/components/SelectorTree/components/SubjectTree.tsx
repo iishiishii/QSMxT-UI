@@ -12,7 +12,7 @@ const SubjectTree: React.FC = () => {
   const [expandedKeys, setExpandedKeys] = useState([]);
 
   useEffect(() => {
-    if (page === Page.YourData || page === Page.Results || page === Page.Home) {
+    if (page === Page.Data || page === Page.Results || page === Page.Home) {
       setSelectedSubjects(selectedSubjects.length ? [selectedSubjects[0]] : []);
     }
     if (page === Page.Run) {
@@ -26,7 +26,7 @@ const SubjectTree: React.FC = () => {
     const [clickedSubject, clickedSession, clickedRun]: string[] = info.node.key.split("&");
     const sessionKey = `${clickedSubject}&${clickedSession || ''}`;
     const runKey = `${clickedSubject}&${clickedSession || ''}&${clickedRun || ''}`;
-    if (page === Page.YourData || page === Page.Home || page === Page.Results) {
+    if (page === Page.Data || page === Page.Home || page === Page.Results) {
       if (clickedRun) {
         // setSelectedSubjects(selectedSubjects);
         if (selectedSubjects.find(selectedSubject => selectedSubject === runKey)) {
@@ -83,8 +83,8 @@ const SubjectTree: React.FC = () => {
       <div 
       // style={{ fontSize: 15 }}
       >
-        You currently have no subject data upload into QSMxT.
-        Go to <a onClick={() => navigate('/yourData')}>Your Data </a>page to upload data.
+        No subject data.
+        Go to <a onClick={() => navigate('/Data')}>Data</a> to upload.
       </div>
     </div>
   }

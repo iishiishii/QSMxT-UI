@@ -4,7 +4,7 @@ import { NavigateFunction } from 'react-router-dom';
 
 export enum Page {
   Home = '',
-  YourData = 'yourData',
+  Data = 'data',
   Run = 'run',
   Results = 'results'
 }

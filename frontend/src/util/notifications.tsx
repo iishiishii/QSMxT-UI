@@ -24,19 +24,19 @@ export const handleJobNotification = (jobNotification: JobNotification, navigate
     } else if (job.type === JobType.DICOM_CONVERT || job.type === JobType.BIDS_COPY) {
       description = (
         <div>
-          Your subject data is now viewable in the <a onClick={() => {navigate(`/${Page.YourData}`)}}>Your Data Page</a>
+          Subject data are now viewable in <a onClick={() => {navigate(`/${Page.Data}`)}}>Data</a>
         </div>
       )
     } else if (job.type === JobType.QSM) {
       description = (
         <div>
-          QSM Images are now viewable in the <a onClick={() => {navigate(`/${Page.Results}`)}}>Results Page</a>
+          QSMs are now viewable in <a onClick={() => {navigate(`/${Page.Results}`)}}>Results</a>
         </div>
       )
     } else if (job.type === JobType.SEGMENTATION) {
       description = (
         <div>
-          Analysis results are now viewable in the <a onClick={() => {navigate(`/${Page.Results}`)}}>Results Page</a>
+          Analyses are now viewable in <a onClick={() => {navigate(`/${Page.Results}`)}}>Results</a>
         </div>
       )
     }
