@@ -19,10 +19,6 @@ const patientNamesHelperText = <Text>
   Use the DICOM 'PatientName' field rather than 'PatientID' to identify subjects
 </Text>
 
-const sessionDatesHelperText = <Text>
-  Use the 'StudyDate' field rather than an incrementer to identify scanning sessions
-</Text>
-
 const checkAllFilesHelperText = <Text>
   Ignores the DICOM file extensions .dcm and .IMA and instead reads all files for valid<br/>
   DICOM headers. This is useful if some of your DICOM files have unusual file extensions<br/> 
@@ -35,18 +31,12 @@ const t2wHelperText = <Text>
 </Text>
 
 const t1wHelperText = <Text>
-  Ignores the DICOM file extensions .dcm and .IMA and instead reads all files for valid<br/>
-  DICOM headers. This is useful if some of your DICOM files have unusual file extensions<br/> 
-  or none at all.
-</Text>
-
-const uploadingBidsHelpderText = <Text>
-  Click yes if the folder you are copying BIDS files from contains more than one subject.<br/>
+  Patterns used to identify T1-weighted series acquired for segmentation.<br/>
+  These patterns will be used to match the 'ProtocolName' field.
 </Text>
 
 const copyPathHelpererText = <Text>
-  The folder containing your subject data must be in the "neurodesktop-storage" folder<br/>
-  on your harddrive.
+  The path to your data.
 </Text>
 
 const styles = {
@@ -201,18 +191,6 @@ const UploadDataCard: React.FC = () => {
         </Popover>
       </div>
       <Radio.Group onChange={(e) => setUsePatientNames(e.target.value)} value={usePatientNames}>
-        <Radio.Button value={true}>Yes</Radio.Button>
-        <Radio.Button value={false}>No</Radio.Button>
-      </Radio.Group>
-      <br />
-      <br />
-      <div style={styles.flexBox}>
-        <Text>Use session dates?</Text>
-        <Popover title={null} content={sessionDatesHelperText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
-      </div>
-      <Radio.Group onChange={(e) => setUseSessionDates(e.target.value)} value={useSessionDates}>
         <Radio.Button value={true}>Yes</Radio.Button>
         <Radio.Button value={false}>No</Radio.Button>
       </Radio.Group>
