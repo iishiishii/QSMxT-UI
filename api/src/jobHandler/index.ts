@@ -112,8 +112,8 @@ const runJob = async (jobId: string) => {
       const { subjects, linkedQsmJob, sessions } = parameters as SegementationParameters;
       jobPromise = qsmxt.runSegmentation( subjects, linkedQsmJob, sessions);
     } else if (type === JobType.BIDS_COPY) {
-      const { copyPath, uploadingMultipleBIDs } = parameters as BIDsCopyParameters;
-      jobPromise = qsmxt.copyBids(copyPath, uploadingMultipleBIDs);
+      const { copyPath } = parameters as BIDsCopyParameters;
+      jobPromise = qsmxt.copyBids(copyPath);
     }
     logFilePath = await getLogFile(type, id, linkedQsmJob);
     sockets.createInProgressSocket(logFilePath);

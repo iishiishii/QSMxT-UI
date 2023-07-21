@@ -76,8 +76,7 @@ export type SegementationParameters = {
 }
 
 export type BIDsCopyParameters = {
-  copyPath: string,
-  uploadingMultipleBIDs: boolean
+  copyPath: string
 }
 
 export type JobParameters = DicomSortParameters | DicomConvertParameters | QsmParameters | SegementationParameters | BIDsCopyParameters

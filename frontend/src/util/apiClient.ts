@@ -166,12 +166,11 @@ const getStatus = async () => {
   return response.data as any;
 }
 
-const copyBids = async (copyPath: string, uploadingMultipleBIDs: boolean): Promise<boolean> => {
-  const uploadDicomsUrl = API_URL + '/subjects/bids';
+const copyBids = async (copyPath: string): Promise<boolean> => {
+  const uploadBidsUrl = API_URL + '/subjects/bids';
   try {
-    await axiosInstance.post(uploadDicomsUrl, {
-        copyPath,
-        uploadingMultipleBIDs
+    await axiosInstance.post(uploadBidsUrl, {
+        copyPath
     });
     return true;
   } catch (err) {

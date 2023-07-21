@@ -35,14 +35,12 @@ const uploadSubjectDicomData = async (request: Request, response: Response) => {
 }
 
 const uploadSubjectBidsData = async (request: Request, response: Response) => {
-  logger.green("Received request to copy BIDS at " + new Date().toISOString());
-  const { copyPath, uploadingMultipleBIDs } = request.body;
+  const { copyPath } = request.body;
+  logger.green("Received request to copy BIDS from " + copyPath + " at " + new Date().toISOString());
 
   // check already exists
-
   const parameters = { 
-    copyPath: copyPath as string, 
-    uploadingMultipleBIDs: uploadingMultipleBIDs as boolean 
+    copyPath: copyPath as string
   } as BIDsCopyParameters;
 
   await jobHandler.addJobToQueue(JobType.BIDS_COPY, parameters);

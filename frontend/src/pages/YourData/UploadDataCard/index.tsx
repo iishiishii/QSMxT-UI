@@ -71,7 +71,6 @@ const UploadDataCard: React.FC = () => {
   const [checkAllFiles, setCheckAllFiles] = useState(false);
   const [t2starwProtocolPattern, setT2starwProtocol] = useState(defaultT2ProtocolPatterns);
   const [t1wProtocolPattern, setT1wProtocolPattern] = useState(defaultT1ProtocolPatterns);
-  const [uploadingMultipleBIDs, setUploadingMultipleBIDs] = useState(false);
   const [t2Options, setT2Options]: [any, any] = useState([optionPrompt]);
   const [t1Options, setT1Options]: [any, any]  = useState([optionPrompt]);
   const [uploadPath, setUploadPath]: [string, (uploadPath: string) => void]  = useState('');
@@ -89,7 +88,7 @@ const UploadDataCard: React.FC = () => {
         success = await apiClient.copyDicoms(uploadPath, usePatientNames, useSessionDates, checkAllFiles, t2starwProtocolPattern, t1wProtocolPattern);
       }
       if (dataType === SubjectUploadFormat.BIDS) {
-        success = await apiClient.copyBids(uploadPath, uploadingMultipleBIDs);
+        success = await apiClient.copyBids(uploadPath);
       }
       // TODO - nifit data type
       if (success) {
@@ -271,18 +270,7 @@ const UploadDataCard: React.FC = () => {
   }
 
   const renderBidsConfigureStep = () => {
-    return <div>
-      <div style={styles.flexBox}>
-        <Text>Are you uploading multiple subjects?</Text>
-        <Popover title={null} content={uploadingBidsHelpderText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
-      </div>
-      <Radio.Group onChange={(e) => setUploadingMultipleBIDs(e.target.value)} value={uploadingMultipleBIDs}>
-        <Radio.Button value={true}>Yes</Radio.Button>
-        <Radio.Button value={false}>No</Radio.Button>
-      </Radio.Group>
-    </div>
+    return <div></div>
   }
 
   const renderNiftiConfigureStep = () => {
