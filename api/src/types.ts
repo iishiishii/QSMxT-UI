@@ -1,4 +1,4 @@
-export type Subjectechoes = {
+export type SubjectEchoes = {
   [echoNumber: string]: {
     magnitude: any,
     phase: any,
