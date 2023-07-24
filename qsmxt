@@ -13,7 +13,7 @@ handle_interrupt(){
 trap handle_interrupt INT
 
 # Kill any existing instances of the servers
-pkill -f "python3 -m http.server 8080"
+pkill -f "python3 -m http.server 50000"
 pkill -f "ts-node index.ts"
 
 mkdir -p "${HOME}/.qsmxt/dicoms" "${HOME}/.qsmxt/bids" "${HOME}/.qsmxt/qsm" "${HOME}/.qsmxt/logs" "${HOME}/.qsmxt/database"
@@ -31,7 +31,7 @@ done
 
 # Start frontend in a subshell with its working directory
 echo "Starting QSMxT frontend interface..."
-( cd "${script_dir}/frontend/build/" && python3 -m http.server 8080 ) &
+( cd "${script_dir}/frontend/build/" && python3 -m http.server 50000 ) &
 frontend_pid=$!
 
 # Display start message
@@ -40,10 +40,10 @@ echo "QSMxT is running!"
 # Check for the operating system and open the browser
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    xdg-open http://0.0.0.0:8080
+    xdg-open http://0.0.0.0:50000
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
-    open http://0.0.0.0:8080
+    open http://0.0.0.0:50000
 fi
 
 wait "$frontend_pid"
