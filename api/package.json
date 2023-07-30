@@ -6,8 +6,11 @@
   "scripts": {
     "start": "nodemon index.ts -L",
     "start-prod": "DEBUG=false ts-node index.ts",
+    "start:ui": "react-scripts start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build:ui": "rm -rf build && cd ../frontend/ && yarn build && cp -r build ../api",
+    "build": "tsc && yarn build:ui && node ./scripts/setupDir.js",
+    "dev": "yarn build && yarn start"
   },
   "keywords": [],
   "author": "",
