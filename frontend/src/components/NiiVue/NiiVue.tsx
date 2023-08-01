@@ -29,34 +29,55 @@ const values: any = {
     increment: .01
   }
 }
+const nv = new Niivue()
 
 const NiiVue: React.FC<Props> = ({ imageUrl, type }) => {
   const canvas = useRef()
+  const volumeList = [
+    {
+      url: imageUrl,
+    },
+  ]
+  const [layers, setLayers] = useState(nv.volumes);
+
+  nv.onImageLoaded = () => {
+    setLayers([...nv.volumes]);
+  };
+
   useEffect(() => {
-    const volumeList = [
-      {
-        url: imageUrl,
-      },
-    ]
-    const nv = new Niivue()
-    nv.attachToCanvas(canvas.current)
-    nv.loadVolumes(volumeList)
+    async function fetchData() {
+      nv.attachToCanvas(canvas.current);
+      await nv.loadVolumes(volumeList);
+      setLayers([...nv.volumes])
+    }
+    fetchData();
   }, [imageUrl]);
 
-  console.log(values[type] );
   const { max, min, increment, defaultRange } = values[type] as any;
 
   const [range, setRange] = useState(defaultRange);
 
-  const onChange = (e: any) => {
-    console.log(e);
+  function onRangeChange(newValue: number | number[]) {
+    setRange(newValue);
+    console.log(range, newValue);
+    layers[0].cal_min = range[0];
+    layers[0].cal_max = range[1];
+    nv.updateGLVolume();
   }
 
   return (
     <div>
       <Title style={{marginTop: 0}} level={4}>Image Range</Title>
       { type !== 'phase' && (
-        <Slider onChange={(range) => setRange(range)} step={increment} range value={range} max={max} min={min} disabled={false} />
+        <Slider 
+          step={increment} 
+          value={range} 
+          max={max} 
+          min={min} 
+          onChange={onRangeChange} 
+          range
+          disabled={false} 
+          />
       )}
       <div style={{ minHeight: 480 }}>
         <canvas key={imageUrl} ref={canvas as any} height={480} width={640} />
