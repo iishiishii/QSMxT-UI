@@ -7,9 +7,9 @@ import PageContainer from '../../containers/PageContainer';
 const DataPage: React.FC = () => {
   return (
     <PageContainer title={"Data"} gap={10}>
-      <CohortCard />
-      <SubjectCard />
       <UploadDataCard />
+      <SubjectCard />
+      <CohortCard />
     </PageContainer>   
   )
 }

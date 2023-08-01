@@ -6,25 +6,46 @@ interface Props {
   setLoading: (loading: boolean) => void
 }
 
-const LoadingPage: React.FC<Props> = ({ setLoading }) => {
-  const [status, setStatus]: [any, any] = useState(null);
-  
-  let interval: any;
-  useEffect(() => {
-    const fetchStatus = async () => {
+// rewrite useeffect hook to wait till status is ok
+export async function waitUntilServerIsUp(): Promise<boolean> {
+  return new Promise<boolean>(resolve => {
+    async function checkUrl() {
       const { status } = await apiClient.getStatus();
-      setStatus(status);
-  
       if (status === 'ok') {
-        clearInterval(interval);
-        setLoading(false);
+        return resolve(true);
+      } else {
+        console.log("Server is not up yet")
+        setTimeout(async () => {
+          await checkUrl();
+        }, 6500);
       }
     }
-    fetchStatus();
-    interval = setInterval(fetchStatus, 500);
-  }, [])
 
- 
+    checkUrl();
+  });
+}
+
+export async function waitForDuration(duration: number): Promise<boolean> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(false);
+    }, duration);
+  });
+}
+
+const LoadingPage: React.FC<Props> = ({ setLoading }) => {
+  Promise.race([
+    waitUntilServerIsUp(),
+    waitForDuration(6500)
+  ]).then((up: boolean) => {
+    if (up) {
+      console.log("Server is up");
+      setLoading(false);
+    } else {
+      console.debug("Server didn't start in time");
+    }
+  });
+
   return (
     <div style={{ minWidth: '100%', minHeight: '100%', marginTop: 80, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
       <div style={{ minWidth: 350, minHeight: 350 }}>

@@ -2,22 +2,27 @@
 
 # Dependencies
 
-## Node v12.13
+## Build dependencies
+
+- nodejs
+
+  You can install from https://nodejs.org/en/download/
+
+- yarn
+
+Install using
 
 ```bash
-mkdir nodejs12
-cd nodejs12/
-wget https://nodejs.org/dist/v12.13.0/node-v12.13.0-linux-x64.tar.xz
-tar xf node-v12.13.0-linux-x64.tar.xz
-rm node-v12.13.0-linux-x64.tar.xz
-echo "export PATH=`pwd`/node-v12.13.0-linux-x64/bin:${PATH}" >> ~/.bashrc
-source ~/.bashrc
+npm install --global yarn
 ```
+
 ```bash
 $ node --version
 v12.13.0
 $ npm --version
 6.12.0
+$ yarn --version
+1.22.19
 ```
 
 ## sqlite3
@@ -29,9 +34,12 @@ npm install sqlite3 --build-from-source
 
 # Install
 
-Install via `setup.sh`.
+`npm install`
 
 # Run
 
-Run via `qsmxt`.
+```bash
+cd frontend
+npm run start
+```
 
