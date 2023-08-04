@@ -15,6 +15,7 @@ export type SubjectRuns = {
 
 export type SubjectSession = {
   runs: SubjectRuns
+  sessionImages: string[]
 }
 
 export type SubjectSessions =  {

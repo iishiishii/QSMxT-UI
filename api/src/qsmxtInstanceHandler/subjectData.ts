@@ -44,13 +44,38 @@ const getRunsForSession = (subjectPath: string, sessionNumber: string): SubjectR
   return runs;
 }
 
+const getAllImagesForSession = (subjectPath: string, sessionNumber: string): string[] => {
+  const images: Set<string> = new Set();
+  const imageRegex = `.*(?=\\.nii)`;
+  const sessionsAnatPath = path.join(subjectPath, `./${sessionNumber}/anat`);
+  const sessionsExtraPath = path.join(subjectPath, `./${sessionNumber}/extra_data`);
+  if (fs.existsSync(sessionsAnatPath)) {
+    const sessionAnatFiles = fs.readdirSync(sessionsAnatPath);
+    // const runNumbers = getRunNumbersForSession(sessionFiles);
+    sessionAnatFiles.forEach((fileName: string) => {
+      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0]
+      images.add(imageName as string);
+    })
+  }
+  if (fs.existsSync(sessionsExtraPath)) {
+    const sessionExtraFiles = fs.readdirSync(sessionsExtraPath);
+    sessionExtraFiles.forEach((fileName: string) => {
+      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0]
+      images.add(imageName as string);
+    })
+  }
+  console.log("images ", images)
+  return Array.from(images);
+}
+
 export const getSessionsForSubject = (subject: string): SubjectSessions => {
   const sessionsTree: SubjectSessions = {};
   const subjectPath = path.join(BIDS_FOLDER, `./${subject}`);
   const sessionNumbers = fs.readdirSync(subjectPath);
   sessionNumbers.forEach((sessionNumber: string) => {
       sessionsTree[sessionNumber] = {
-        runs: getRunsForSession(subjectPath, sessionNumber)
+        runs: getRunsForSession(subjectPath, sessionNumber),
+        sessionImages: getAllImagesForSession(subjectPath, sessionNumber)
       }
     });
   return sessionsTree;

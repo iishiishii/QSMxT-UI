@@ -14,6 +14,7 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
   convertDicomCommand += ` --t2starw_protocol_patterns ${t2starwProtocolPatterns.join(' ')}`;
   convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(' ')}`;
   const completionString = 'INFO: Finished';
+  console.log("convertDicomCommand ", convertDicomCommand)
   await runQsmxtCommand(convertDicomCommand, completionString);
   const allSavedSubjectsNames = await database.subjects.get.allNames();
   const subjectFolders = fs.readdirSync(BIDS_FOLDER).filter(fileName => {
@@ -23,9 +24,15 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
     // @ts-ignore
     return !allSavedSubjectsNames.find(subject => subject === folderName);
   });
-  await Promise.all(newSubjects.map(async (subject) => {
-    return database.subjects.save(subject, SubjectUploadFormat.DICOM, parameters, { sessions: getSessionsForSubject(subject) });
-  }));
+  try {
+    await Promise.all(newSubjects.map(async (subject) => {
+      return database.subjects.save(subject, SubjectUploadFormat.DICOM, parameters, { sessions: getSessionsForSubject(subject) });
+    }));
+  } catch (error) {
+    logger.red(error as string);
+    throw error;
+  }
+
   logger.green("Finished converting dicoms");
 }
 

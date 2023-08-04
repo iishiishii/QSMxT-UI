@@ -47,7 +47,7 @@ const SubjectCard: React.FC = () => {
     const session: string = keys[1];
     const run: string = keys[2];
     const subject = subjects.find(sub => sub.subject === subjectName) as Subject;
-    const openRunDetailButtonDisabled = keys.length !== 3;
+    const openRunDetailButtonDisabled = session == null;
     const openRunButton = (
       <Button 
         onClick={() => setOpenDrawer(true)}
@@ -60,6 +60,7 @@ const SubjectCard: React.FC = () => {
     )
     const firstSessionName = Object.keys(subject.dataTree.sessions)[0];
     const numOfSessions = Object.keys(subject.dataTree.sessions).length;
+    const SessionImages = subject.dataTree.sessions[firstSessionName].sessionImages.filter(img => img);
     const firstRunName = Object.keys(subject.dataTree.sessions[firstSessionName].runs)[0];
     const numberOfRuns = Object.keys(subject.dataTree.sessions[firstSessionName].runs).length;
     const numberOfEchoes = Object.keys(subject.dataTree.sessions[firstSessionName].runs[firstRunName]?.echoes ?? {}).length;
@@ -107,7 +108,7 @@ const SubjectCard: React.FC = () => {
         <br />
         {
           openRunDetailButtonDisabled 
-            ? <Popover title={null} content={"Select a run for the subject on the left of the screen in order to be able to open it"}>
+            ? <Popover title={null} content={"Select a session for the subject on the left of the screen in order to be able to open it"}>
                 {openRunButton}
              </Popover>
             : openRunButton
@@ -118,6 +119,7 @@ const SubjectCard: React.FC = () => {
           subject={subject}
           run={run}
           session={session}
+          imageName={SessionImages}
         />
       </div>
     )

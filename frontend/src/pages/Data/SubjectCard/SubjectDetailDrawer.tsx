@@ -10,6 +10,7 @@ import axios from 'axios';
 interface Props {
   subject: Subject,
   run: string,
+  imageName: string[],
   session: string,
   open: boolean,
   setOpen: (open: boolean) => void
@@ -19,41 +20,30 @@ const { Panel } = Collapse;
 
 const { Title, Paragraph, Text } = Typography;
 
-const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, session }) => {
-
-  const [selectedEcho, setSelectedEcho]: [any, any] = useState('');
+const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, imageName, setOpen, session }) => {
   const [imageType, setImageType]: [any, any] = useState('mag');
   const [imageMetadata, setImageMetadata]: [any, any] = useState({});
+  const [anatImage, setAnatImage] = useState(imageName[0]);
 
-  useEffect(() => {
-    if (open) {
-      const echoNumbers = subject.dataTree.sessions[session].runs[run].echoes;
-      setSelectedEcho(echoNumbers[0]);
-    }
-  }, [open])
-
+  console.log("subject", subject.dataTree, anatImage)
   useEffect(() => {
     const getMetadata = async () => {
-      const metadataUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${subject.subject}_${session}_run-${run}_echo-${selectedEcho}_part-${imageType}_MEGRE.json`
+      const metadataUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${anatImage}.json`
       const response = await axios.get(metadataUrl);
       setImageMetadata(response.data)
     }
-    if (open && selectedEcho) {
+    if (open) {
       getMetadata();
     }
-  }, [open, imageType, selectedEcho])
+  }, [open])
 
-  const onChangeEcho = (e: any) => {
-    setSelectedEcho(e);
-  }
-
-  const onChangeImageType = (e: any) => {
-    setImageType(e);
+  const onChangeAnatImage = (e: any) => {
+    setAnatImage(e);
   }
 
   const renderImageAndDescriptions = () => {
-    const imageUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${subject.subject}_${session}_run-${run}_echo-${selectedEcho}_part-${imageType}_MEGRE.nii`
-    
+    const imageUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${anatImage}.nii`
+    console.log("image ", imageUrl)
     const columns = [{
       title: 'Field',
       dataIndex: 'field',
@@ -93,28 +83,12 @@ const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, ses
   }
 
   const renderBody = () => {
-    console.log(subject);
-
-    const echoNumbers = subject.dataTree.sessions[session].runs[run].echoes;
-    console.log(echoNumbers)
-
-    const echoOptions = echoNumbers.map(echo => (
+    const imageOptions = imageName.map(image => (
       {
-        label: echo,
-        value: echo
+        label: image,
+        value: image
       }
     ))
-
-    const imageOptions = [
-      {
-        label: 'Magnitude',
-        value: 'mag'
-      },
-      {
-        label: 'Phase',
-        value: 'phase'
-      }
-    ]
 
     return (
       <div>
@@ -122,17 +96,9 @@ const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, ses
         <Drawer />
         <Title style={{ marginTop: 10 }} level={5}>Select the Echo Number: </Title>
         <Select
-          value={selectedEcho}
+          value={anatImage}
           style={{ width: '100%' }}
-          onChange={onChangeEcho}
-          options={echoOptions}
-        />
-        <br />
-        <Title level={5}>Select the Image Type:</Title>
-        <Select
-          value={imageType}
-          style={{ width: '100%' }}
-          onChange={onChangeImageType}
+          onChange={onChangeAnatImage}
           options={imageOptions}
         />
         <br />
@@ -145,14 +111,14 @@ const SubjectDetailDrawer: React.FC<Props> = ({ subject, run, open, setOpen, ses
   return (
     <div>
       <Drawer
-        title={open ? `Subject: ${subject.subject} - Run: ${run}` : ''}
+        title={open ? `Subject: ${subject.subject} - Session: ${session}` : ''}
         placement="left"
         open={open}
         size="large"
         onClose={() => setOpen(false)}
       >
         {
-          open && selectedEcho
+          open
             ? renderBody()
             : <div />
         }
