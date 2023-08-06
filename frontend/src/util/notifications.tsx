@@ -44,7 +44,7 @@ export const handleJobNotification = (jobNotification: JobNotification, navigate
       message: `${job.type} succesfully finished`,
       description,
       placement: 'topRight',
-      duration: null
+      duration: 2
     })
   } else if (job.status === JobStatus.FAILED) {
     notification.error({
@@ -55,7 +55,7 @@ export const handleJobNotification = (jobNotification: JobNotification, navigate
         </div>
       ),
       placement: 'topRight',
-      duration: null
+      duration: 2
     })
   }
 }
