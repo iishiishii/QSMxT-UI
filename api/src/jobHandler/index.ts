@@ -23,7 +23,7 @@ const getJobResultsFolder = (jobType: JobType, id: string, linkedQsmJob: string 
     return DICOMS_FOLDER;
   }
   if (jobType === JobType.DICOM_CONVERT) {
-    return BIDS_FOLDER;
+    return DICOMS_FOLDER;
   }
   if (jobType === JobType.QSM) {
     return path.join(QSM_FOLDER, id);
@@ -76,7 +76,6 @@ const setJobToComplete = async (jobId: string, status: JobStatus, error: string 
   if (error) {
     job.error = new Date().toISOString() + ": " + error
   }
-  console.log(job);
   await updateJob(job);
   sockets.sendJobAsNotification(job);
   if ((jobQueue as Job[]).length) {
@@ -93,77 +92,78 @@ const setJobToInProgress = async (jobId: string) => {
   await updateJob(job);
 }
 
+const handleSuccessLogger = async (id: string, type: JobType, linkedQsmJob: string | undefined, logFilePath: string) => {
+  logger.green(`Job ${id} complete`);
+  await setJobToComplete(id, JobStatus.COMPLETE);
+  await getLogFile(type, id, linkedQsmJob).then((path) => {
+    if (path) {
+      const logContents = fs.readFileSync(path, { encoding: 'utf-8' });
+      fs.appendFileSync(logFilePath, logContents, { encoding: 'utf-8' });
+    }
+  });
+  Promise.resolve()
+}
+
+const handleFailureLogger = async (id: string, type: JobType, linkedQsmJob: string | undefined, logFilePath: string, err: string) => {
+  logger.red(`Job ${id} failed`); 
+  logger.red(err)
+  fs.appendFileSync(logFilePath, `${err}\n`, { encoding: 'utf-8' });
+  await setJobToComplete(id, JobStatus.FAILED, err)
+  await getLogFile(type, id, linkedQsmJob).then((path) => {
+    if (path) {
+      const logContents = fs.readFileSync(path, { encoding: 'utf-8' });
+      fs.appendFileSync(logFilePath, logContents, { encoding: 'utf-8' });
+    }
+  });
+  Promise.resolve()
+}
+
 const runJob = async (jobId: string) => {
   const { id, type, parameters, linkedQsmJob } = await getJobById(jobId);
-  let logFilePath: string = '';
-  let errorMessage: any;
+  let logFilePath: string = path.join(LOGS_FOLDER, `${id}.log`);
+  let dateTime = new Date().toISOString();
+  fs.writeFileSync(logFilePath, `Started job at ${dateTime}\n`, { encoding: 'utf-8' });
 
-    setJobToInProgress(jobId);
-    let jobPromise;
+  sockets.createInProgressSocket(logFilePath);
+  setJobToInProgress(jobId);
+  let jobPromise;
     if (type === JobType.DICOM_SORT) {
       jobPromise = qsmxt.sortDicoms(parameters as DicomSortParameters).then(async () => {
-        logger.green(`Job ${id} complete`);
-        await setJobToComplete(id, JobStatus.COMPLETE);
+        handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
       }).catch(async (err) => {
-        logger.red(`Job ${id} failed`);
-        
-        if ((err as Error).message) {
-          errorMessage = (err as Error).message
-        } else {
-          errorMessage = err;
-        }
-        logger.red(errorMessage)
-        await setJobToComplete(id, JobStatus.FAILED, errorMessage)
-        Promise.resolve()
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
       });
-    } else if (type === JobType.DICOM_CONVERT) {
+    } 
+    
+    else if (type === JobType.DICOM_CONVERT) {
       jobPromise = qsmxt.convertDicoms(parameters as DicomConvertParameters).then(async () => {
-        logger.green(`Job ${id} complete`);
-        await setJobToComplete(id, JobStatus.COMPLETE);
+        handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
       }).catch(async (err) => {
-        logger.red(`Job ${id} failed`);
-        
-        if ((err as Error).message) {
-          errorMessage += (err as Error).message
-        } else {
-          errorMessage += err;
-        }
-        logger.red(errorMessage)
-        await setJobToComplete(id, JobStatus.FAILED, errorMessage)
-        Promise.resolve()
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
       });
-    } else if (type === JobType.QSM) {
+    } 
+    
+    else if (type === JobType.QSM) {
       const { subjects, sessions, runs, pipelineConfig } = parameters as QsmParameters;
       try {
         fs.mkdirSync(path.join(QSM_FOLDER, id));
       } catch (err) {}
       jobPromise = qsmxt.runQsmPipeline(id, subjects, sessions, runs, pipelineConfig);
-    } else if (type === JobType.SEGMENTATION) {
+    } 
+    
+    else if (type === JobType.SEGMENTATION) {
       const { subjects, linkedQsmJob, sessions } = parameters as SegementationParameters;
       jobPromise = qsmxt.runSegmentation( subjects, linkedQsmJob, sessions);
-    } else if (type === JobType.BIDS_COPY) {
+    } 
+    
+    else if (type === JobType.BIDS_COPY) {
       const { copyPath } = parameters as BIDsCopyParameters;
-      jobPromise = qsmxt.copyBids(copyPath);
+      jobPromise = qsmxt.copyBids(copyPath).then(async () => {
+        handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
+      }).catch(async (err) => {
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
+      });;
     }
-    logFilePath = await getLogFile(type, id, linkedQsmJob);
-    sockets.createInProgressSocket(logFilePath);
-    // await jobPromise;
-    // await setJobToComplete(id, JobStatus.COMPLETE);
-  // } catch (err) {
-  //   let errorMessage: any;
-  //   if ((err as Error).message) {
-  //     errorMessage = (err as Error).message
-  //   } else {
-  //     errorMessage = err;
-  //   }
-  //   logger.red(errorMessage)
-  //   setJobToComplete(id, JobStatus.FAILED, errorMessage)
-  // }
-  if (logFilePath) {
-    const logContents = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
-    fs.writeFileSync(path.join(LOGS_FOLDER, `${id}.log`), logContents, { encoding: 'utf-8' });
-  }
-
 }
 
 const addJobToQueue = async (type: JobType, parameters: JobParameters, linkedQsmJob: string | null = null, description: string | null = null): Promise<string> => {

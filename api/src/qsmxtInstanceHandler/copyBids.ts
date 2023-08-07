@@ -13,21 +13,10 @@ const logFilePath = path.join(BIDS_FOLDER, 'copyBids.log');
 
 const copyAllFilesAndFolders = async (soucePath: string, destinationPath: string) => {
   const copyInstance: any = spawn('cp', ['-r', soucePath, destinationPath]);
-  try {
-    await new Promise((resolve, reject) => {
-      setupListeners(copyInstance, reject);
-      copyInstance.on('exit', (code: number) => {
-        if (code === 0) {
-          resolve(null);
-        } else {
-          reject(`Copy failed with code ${code}`);
-        }
-      })
-    })
-  }
-  catch (error) {
-    fs.appendFileSync(logFilePath, `${error}\n`, { encoding: 'utf-8' });
-  }
+  const completionString = 'INFO: Finished';
+  await new Promise((resolve, reject) => {
+    setupListeners(copyInstance, completionString, resolve, reject);
+  })
 
   copyInstance.kill();
 }

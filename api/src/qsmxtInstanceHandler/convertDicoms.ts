@@ -7,11 +7,12 @@ import { DicomConvertParameters, SubjectEchoes, SubjectRuns, SubjectSessions, Su
 import { runQsmxtCommand } from ".";
 import { getSessionsForSubject } from "./subjectData";
 
-const logFilePath = path.join(BIDS_FOLDER, 'convertDicoms.log');
+const logFilePath = path.join(DICOMS_FOLDER, 'convertDicoms.log');
 
 const convertDicoms = async (parameters: DicomConvertParameters) => {
   const { t2starwProtocolPatterns, t1wProtocolPatterns } = parameters;
   logger.green("Starting dicom convert");
+  fs.writeFileSync(logFilePath, `Starting Dicom converting.\n`, { encoding: 'utf-8' });
   let convertDicomCommand = `run_1_dicomConvert.py ${DICOMS_FOLDER} ${BIDS_FOLDER} --auto_yes`;
   convertDicomCommand += ` --t2starw_protocol_patterns ${t2starwProtocolPatterns.join(' ')}`;
   convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(' ')}`;
@@ -23,7 +24,6 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
        console.log("convert result ", result);
     }
   ).catch((err) => {
-    console.log("convert err ", err)
     fs.appendFileSync(logFilePath, `${err}\n`, { encoding: 'utf-8' });
     throw err;
   });

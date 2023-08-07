@@ -5,7 +5,7 @@ import path from "path";
 import csvtojson from "csvtojson";
 import fs from "fs"
 
-const logFilePath = path.join(LOGS_FOLDER, 'convertDicoms.log');
+const logFilePath = path.join(QSM_FOLDER, 'qsmSegmentation.log');
 
 const getSegmentationCmdLineOptions = (subject: string, sessions: string[]) => {
   let options =  `--subject_pattern ${subject}`;
