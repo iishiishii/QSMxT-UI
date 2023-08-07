@@ -12,12 +12,12 @@ const logFilePath = path.join(DICOMS_FOLDER, 'convertDicoms.log');
 const convertDicoms = async (parameters: DicomConvertParameters) => {
   const { t2starwProtocolPatterns, t1wProtocolPatterns } = parameters;
   logger.green("Starting dicom convert");
-  fs.writeFileSync(logFilePath, `Starting Dicom converting.\n`, { encoding: 'utf-8' });
   let convertDicomCommand = `run_1_dicomConvert.py ${DICOMS_FOLDER} ${BIDS_FOLDER} --auto_yes`;
   convertDicomCommand += ` --t2starw_protocol_patterns ${t2starwProtocolPatterns.join(' ')}`;
   convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(' ')}`;
   const completionString = 'INFO: Finished';
   console.log("convertDicomCommand ", convertDicomCommand)
+  fs.writeFileSync(logFilePath, `Starting Dicom converting.\n` + `Command: ${convertDicomCommand}\n`, { encoding: 'utf-8' });
   
   await runQsmxtCommand(convertDicomCommand, completionString, logFilePath).then(
     (result) => { 

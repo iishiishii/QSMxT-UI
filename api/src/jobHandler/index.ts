@@ -44,9 +44,23 @@ const getLogFile = async (jobType: JobType, id: string, linkedQsmJob: string | u
     await new Promise(resolve => setTimeout(resolve, 300));
     if (fs.existsSync(rootFolder)) {
       const dicomFiles = fs.readdirSync(rootFolder);
-      const potentialLogFile = dicomFiles.find(fileName => fileName.includes('log') && fileName !== 'pypeline.log' && fileName !== 'qsmxt_log.log' );
-      if (potentialLogFile) {
-        logFile = potentialLogFile;
+      if (jobType === JobType.DICOM_SORT) {
+        const potentialLogFile = dicomFiles.find(fileName => fileName.includes('convertDicoms'));
+        if (potentialLogFile) {
+          logFile = potentialLogFile;
+        }
+      }
+      else if (jobType === JobType.DICOM_CONVERT) {
+        const potentialLogFile = dicomFiles.find(fileName => fileName.includes('convertDicoms'));
+        if (potentialLogFile) {
+          logFile = potentialLogFile;
+        }
+      }
+      else {
+        const potentialLogFile = dicomFiles.find(fileName => fileName.includes('log') && fileName !== 'pypeline.log' && fileName !== 'qsmxt_log.log' );
+        if (potentialLogFile) {
+          logFile = potentialLogFile;
+        }
       }
     }
   }
@@ -148,12 +162,20 @@ const runJob = async (jobId: string) => {
       try {
         fs.mkdirSync(path.join(QSM_FOLDER, id));
       } catch (err) {}
-      jobPromise = qsmxt.runQsmPipeline(id, subjects, sessions, runs, pipelineConfig);
+      jobPromise = qsmxt.runQsmPipeline(id, subjects, sessions, runs, pipelineConfig).then(async () => {
+        handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
+      }).catch(async (err) => {
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
+      });
     } 
     
     else if (type === JobType.SEGMENTATION) {
       const { subjects, linkedQsmJob, sessions } = parameters as SegementationParameters;
-      jobPromise = qsmxt.runSegmentation( subjects, linkedQsmJob, sessions);
+      jobPromise = qsmxt.runSegmentation( subjects, linkedQsmJob, sessions).then(async () => {
+        handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
+      }).catch(async (err) => {
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
+      });
     } 
     
     else if (type === JobType.BIDS_COPY) {
@@ -162,7 +184,7 @@ const runJob = async (jobId: string) => {
         handleSuccessLogger(id, type, linkedQsmJob, logFilePath)
       }).catch(async (err) => {
         handleFailureLogger(id, type, linkedQsmJob, logFilePath, err)
-      });;
+      });
     }
 }
 
