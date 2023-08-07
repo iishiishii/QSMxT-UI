@@ -29,35 +29,69 @@ export const runQsmxtCommand = async (
   completionString: string,
   logFilePath: string | null = null,
   errorString: string = 'ERROR:'
-) => {
+): Promise<void>  => {
   // Spawn a new shell process
-  const process = spawn(command, [], { shell: true });
+  const process: ChildProcessWithoutNullStreams = spawn(command, [], { shell: true });
 
-  await new Promise((resolve, reject) => {
-    setupListeners(process, reject);
+  let runQsm: Promise<void>  = new Promise((resolve, reject) => {
 
-    process.stdout.on('data', (data) => {
-      const stringData = data.toString();
-      stringData.split('\n').forEach((line: string) => {
-        if (line.includes('ERROR:')) {
-          logger.red(line);
-        } else if (logFilePath) {
-          fs.appendFileSync(logFilePath, line + '\n', { encoding: 'utf-8' })
-        }
-        if (line.includes(completionString)) {
-          resolve(null);
-        }
-        if (line.includes(errorString)) {
-          reject(line);
+      process.stdout.on('data', (data) => {
+          const stringData = data.toString();
+          stringData.split('\n').forEach((line: string) => {
+            if (line.includes('ERROR:')) {
+              logger.red(line);
+              reject(new Error(line));
+            }
+            if (logFilePath) {
+              fs.writeFileSync(logFilePath, line + '\n', { encoding: 'utf-8' })
+            }
+            if (line.includes(errorString)) {
+              logger.red(line);
+              reject(new Error(line));
+            }
+          });
+      });
+
+      process.stderr.on('data', (err: Buffer) => {
+        logger.red("stderr " + err.toString())
+        process.stdout.removeAllListeners();
+        process.stderr.removeAllListeners();
+        process.removeAllListeners();
+        reject(new Error(err.toString()))  
+      });
+
+      process.on('error', (error) => {
+        logger.red(`error: ${error.message}`);
+        process.stdout.removeAllListeners();
+        process.stderr.removeAllListeners();
+        process.removeAllListeners();
+        reject(new Error(error.message))
+      });
+
+
+      process.on('exit', (code, signal) => {
+        const _code: number | null = code;
+        console.log(
+          'child process exited with ' + `code ${code} and signal ${signal}`
+        );
+        if (_code === 0) {
+            process.stdout.removeAllListeners();
+            process.stderr.removeAllListeners();
+            process.removeAllListeners();
+            resolve();
+        } else {
+          process.stdout.removeAllListeners();
+          process.stderr.removeAllListeners();
+          process.removeAllListeners();
+          reject(new Error('child process exited with ' + `code ${code} and signal ${signal}`))
         }
       });
-    });
 
-    logger.yellow(`Running: "${command}"`);
-  });
-
-  // Kill the process after the command is executed.
-  process.kill();
+      logger.yellow(`Running: "${command}"`);
+    });      
+    // Kill the process after the command is executed.
+    process.kill();
+    return runQsm
 };
 
 const killChildProcess = () => {

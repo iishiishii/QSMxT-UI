@@ -74,8 +74,9 @@ const setJobToComplete = async (jobId: string, status: JobStatus, error: string 
     finishedAt: new Date().toISOString()
   }
   if (error) {
-    job.error = error
+    job.error = new Date().toISOString() + ": " + error
   }
+  console.log(job);
   await updateJob(job);
   sockets.sendJobAsNotification(job);
   if ((jobQueue as Job[]).length) {
@@ -95,13 +96,42 @@ const setJobToInProgress = async (jobId: string) => {
 const runJob = async (jobId: string) => {
   const { id, type, parameters, linkedQsmJob } = await getJobById(jobId);
   let logFilePath: string = '';
-  try {
+  let errorMessage: any;
+
     setJobToInProgress(jobId);
     let jobPromise;
     if (type === JobType.DICOM_SORT) {
-      jobPromise = qsmxt.sortDicoms(parameters as DicomSortParameters);
+      jobPromise = qsmxt.sortDicoms(parameters as DicomSortParameters).then(async () => {
+        logger.green(`Job ${id} complete`);
+        await setJobToComplete(id, JobStatus.COMPLETE);
+      }).catch(async (err) => {
+        logger.red(`Job ${id} failed`);
+        
+        if ((err as Error).message) {
+          errorMessage = (err as Error).message
+        } else {
+          errorMessage = err;
+        }
+        logger.red(errorMessage)
+        await setJobToComplete(id, JobStatus.FAILED, errorMessage)
+        Promise.resolve()
+      });
     } else if (type === JobType.DICOM_CONVERT) {
-      jobPromise = qsmxt.convertDicoms(parameters as DicomConvertParameters);
+      jobPromise = qsmxt.convertDicoms(parameters as DicomConvertParameters).then(async () => {
+        logger.green(`Job ${id} complete`);
+        await setJobToComplete(id, JobStatus.COMPLETE);
+      }).catch(async (err) => {
+        logger.red(`Job ${id} failed`);
+        
+        if ((err as Error).message) {
+          errorMessage += (err as Error).message
+        } else {
+          errorMessage += err;
+        }
+        logger.red(errorMessage)
+        await setJobToComplete(id, JobStatus.FAILED, errorMessage)
+        Promise.resolve()
+      });
     } else if (type === JobType.QSM) {
       const { subjects, sessions, runs, pipelineConfig } = parameters as QsmParameters;
       try {
@@ -117,18 +147,18 @@ const runJob = async (jobId: string) => {
     }
     logFilePath = await getLogFile(type, id, linkedQsmJob);
     sockets.createInProgressSocket(logFilePath);
-    await jobPromise;
-    await setJobToComplete(id, JobStatus.COMPLETE);
-  } catch (err) {
-    let errorMessage: any;
-    if ((err as Error).message) {
-      errorMessage = (err as Error).message
-    } else {
-      errorMessage = err;
-    }
-    logger.red(errorMessage)
-    setJobToComplete(id, JobStatus.FAILED, errorMessage)
-  }
+    // await jobPromise;
+    // await setJobToComplete(id, JobStatus.COMPLETE);
+  // } catch (err) {
+  //   let errorMessage: any;
+  //   if ((err as Error).message) {
+  //     errorMessage = (err as Error).message
+  //   } else {
+  //     errorMessage = err;
+  //   }
+  //   logger.red(errorMessage)
+  //   setJobToComplete(id, JobStatus.FAILED, errorMessage)
+  // }
   if (logFilePath) {
     const logContents = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
     fs.writeFileSync(path.join(LOGS_FOLDER, `${id}.log`), logContents, { encoding: 'utf-8' });

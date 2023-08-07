@@ -7,6 +7,8 @@ import { DicomConvertParameters, SubjectEchoes, SubjectRuns, SubjectSessions, Su
 import { runQsmxtCommand } from ".";
 import { getSessionsForSubject } from "./subjectData";
 
+const logFilePath = path.join(BIDS_FOLDER, 'convertDicoms.log');
+
 const convertDicoms = async (parameters: DicomConvertParameters) => {
   const { t2starwProtocolPatterns, t1wProtocolPatterns } = parameters;
   logger.green("Starting dicom convert");
@@ -15,7 +17,17 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
   convertDicomCommand += ` --t1w_protocol_patterns ${t1wProtocolPatterns.join(' ')}`;
   const completionString = 'INFO: Finished';
   console.log("convertDicomCommand ", convertDicomCommand)
-  await runQsmxtCommand(convertDicomCommand, completionString);
+  
+  await runQsmxtCommand(convertDicomCommand, completionString, logFilePath).then(
+    (result) => { 
+       console.log("convert result ", result);
+    }
+  ).catch((err) => {
+    console.log("convert err ", err)
+    fs.appendFileSync(logFilePath, `${err}\n`, { encoding: 'utf-8' });
+    throw err;
+  });
+
   const allSavedSubjectsNames = await database.subjects.get.allNames();
   const subjectFolders = fs.readdirSync(BIDS_FOLDER).filter(fileName => {
     return !fileName.includes('.') && !fileName.includes('README') 
@@ -24,14 +36,15 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
     // @ts-ignore
     return !allSavedSubjectsNames.find(subject => subject === folderName);
   });
-  try {
-    await Promise.all(newSubjects.map(async (subject) => {
-      return database.subjects.save(subject, SubjectUploadFormat.DICOM, parameters, { sessions: getSessionsForSubject(subject) });
-    }));
-  } catch (error) {
+
+  await Promise.all(newSubjects.map(async (subject) => {
+    return database.subjects.save(subject, SubjectUploadFormat.DICOM, parameters, { sessions: getSessionsForSubject(subject) });
+  }))
+  .catch ((error) => {
     logger.red(error as string);
+    fs.appendFileSync(logFilePath, `${error}\n`, { encoding: 'utf-8' });
     throw error;
-  }
+  })
 
   logger.green("Finished converting dicoms");
 }

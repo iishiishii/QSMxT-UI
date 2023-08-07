@@ -25,8 +25,15 @@ export const runQsmPipeline = async (id: string, subjects: string[], sessions: s
       const qsmxtCmmand = `run_2_qsm.py ${BIDS_FOLDER} ${resultFolder} ${getQsmCmdLineOptions(subject, sessions, runs, pipelineConfig)}`;
       const completionString = 'INFO: Finished';
   
-      await runQsmxtCommand(qsmxtCmmand, completionString, logFilePath);
-    }
+      await runQsmxtCommand(qsmxtCmmand, completionString, logFilePath).then(
+          (result) => { 
+            console.log("qsm pipeline result ", result);
+          }
+        ).catch((err) => {
+          console.log("qsm pipeline err ", err)
+          throw err;
+        });
+      }
 
     // const qs/*  */mxtCmmand2 = `run_5_analysis.py --labels_file /opt/QSMxT/aseg_labels.csv --qsm_files ${resultFolder}/qsm_final/*/*.nii --output_dir ${resultFolder}/analysis`;
     // await runQsmxtCommand(qsmxtCmmand2, completionString);

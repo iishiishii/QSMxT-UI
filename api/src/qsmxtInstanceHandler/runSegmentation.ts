@@ -1,9 +1,11 @@
 import { runQsmxtCommand } from ".";
-import { BIDS_FOLDER, QSM_FOLDER } from "../constants";
+import { BIDS_FOLDER, QSM_FOLDER, LOGS_FOLDER } from "../constants";
 import logger from "../util/logger";
 import path from "path";
 import csvtojson from "csvtojson";
 import fs from "fs"
+
+const logFilePath = path.join(LOGS_FOLDER, 'convertDicoms.log');
 
 const getSegmentationCmdLineOptions = (subject: string, sessions: string[]) => {
   let options =  `--subject_pattern ${subject}`;
@@ -22,7 +24,14 @@ const runSegmentation = async (subjects: string[], linkedQsmJob: string, session
 
   for (let subject of subjects) {
     const segmentationCommand = `run_3_segment.py ${BIDS_FOLDER} ${qsmResultFolder} ${getSegmentationCmdLineOptions(subject, sessions)}`;
-    await runQsmxtCommand(segmentationCommand, completionString);
+    await runQsmxtCommand(segmentationCommand, completionString, logFilePath).then(
+      (result) => { 
+        console.log("qsm segmentation result ", result);
+      }
+    ).catch((err) => {
+      console.log("qsm segmentation err ", err)
+      throw err;
+    });
   }
 
   logger.green(`Finished running Segmentation on ${subjects.join(', ')}`);
@@ -30,7 +39,14 @@ const runSegmentation = async (subjects: string[], linkedQsmJob: string, session
   logger.green(`Running analysis on ${subjects.join(', ')}`);
 
   const analysisCommand = `run_5_analysis.py --labels_file /opt/QSMxT/aseg_labels.csv --segmentations ${qsmResultFolder}/qsm_segmentations/*.nii --qsm_files ${qsmResultFolder}/qsm_final/*/*.nii --output_dir ${qsmResultFolder}`;
-  await runQsmxtCommand(analysisCommand, completionString);
+  await runQsmxtCommand(analysisCommand, completionString, logFilePath).then(
+    (result) => { 
+      console.log("segmentation analysis result ", result);
+    }
+  ).catch((err) => {
+    console.log("segmentation analysis err ", err)
+    throw err;
+  });
   logger.green(`Finished analysis on ${subjects.join(', ')}`);
 
   const results: any = {};
