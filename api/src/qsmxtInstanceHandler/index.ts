@@ -70,7 +70,7 @@ export const setupListeners = (
     console.log(
       "child process exited with " + `code ${code} and signal ${signal}`,
     );
-    if (_code === 0) {
+    if (_code === 0 || _code === null) {
       _cleanupListeners(process);
       resolve();
     } else {

@@ -10,7 +10,7 @@ const logFilePath = path.join(DICOMS_FOLDER, "sortDicoms.log");
 const sortDicoms = async (params: DicomSortParameters): Promise<void> => {
   const { copyPath, usePatientNames, useSessionDates, checkAllFiles } = params;
   logger.green("Starting dicom sort");
-  let sortDicomCommand = `run_0_dicomSort.py`;
+  let sortDicomCommand = `run_0_dicomSort.p`;
   if (usePatientNames) {
     sortDicomCommand += ` --use_patient_names`;
   }

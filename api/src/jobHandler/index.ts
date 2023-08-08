@@ -69,7 +69,7 @@ const getLogFile = async (
       const dicomFiles = fs.readdirSync(rootFolder);
       if (jobType === JobType.DICOM_SORT) {
         const potentialLogFile = dicomFiles.find((fileName) =>
-          fileName.includes("convertDicoms"),
+          fileName.includes("sortDicoms"),
         );
         if (potentialLogFile) {
           logFile = potentialLogFile;
@@ -184,7 +184,7 @@ const runJob = async (jobId: string) => {
   fs.writeFileSync(logFilePath, `Started job at ${dateTime}\n`, {
     encoding: "utf-8",
   });
-
+  logger.yellow(`Running job ${id} of type ${type} with linked job ${linkedQsmJob}`)
   sockets.createInProgressSocket(logFilePath);
   setJobToInProgress(jobId);
   let jobPromise;
@@ -193,6 +193,14 @@ const runJob = async (jobId: string) => {
       .sortDicoms(parameters as DicomSortParameters)
       .then(async () => {
         handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
+        // qsmxt
+        //   .convertDicoms(parameters as DicomConvertParameters)
+        //   .then(async () => {
+        //     handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
+        //   })
+        //   .catch(async (err) => {
+        //     handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
+        //   });
       })
       .catch(async (err) => {
         handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
