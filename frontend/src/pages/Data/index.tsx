@@ -1,8 +1,8 @@
-import React from 'react';
-import CohortCard from './CohortCard';
-import SubjectCard from './SubjectCard';
-import UploadDataCard from './UploadDataCard';
-import PageContainer from '../../containers/PageContainer';
+import React from "react";
+import CohortCard from "./CohortCard";
+import SubjectCard from "./SubjectCard";
+import UploadDataCard from "./UploadDataCard";
+import PageContainer from "../../containers/PageContainer";
 
 const DataPage: React.FC = () => {
   return (
@@ -10,8 +10,8 @@ const DataPage: React.FC = () => {
       <UploadDataCard />
       <SubjectCard />
       <CohortCard />
-    </PageContainer>   
-  )
-}
+    </PageContainer>
+  );
+};
 
 export default DataPage;

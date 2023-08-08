@@ -1,28 +1,28 @@
 import logger from "node-color-log";
 
 const red = (text: string) => {
-  logger.color('red').log(text);
-}
+  logger.color("red").log(text);
+};
 
 const green = (text: string) => {
-  logger.color('green').log(text);
-}
+  logger.color("green").log(text);
+};
 
 const yellow = (text: string) => {
-  logger.color('yellow').log(text);
-}
+  logger.color("yellow").log(text);
+};
 
 const white = (text: string) => {
   logger.log(text);
-}
+};
 
 const magenta = (text: string) => {
-  logger.color('magenta').log(text);
-}
+  logger.color("magenta").log(text);
+};
 
 const blue = (text: string) => {
-  logger.color('blue').log(text);
-}
+  logger.color("blue").log(text);
+};
 
 export default {
   red,
@@ -30,5 +30,5 @@ export default {
   yellow,
   white,
   magenta,
-  blue
-}
+  blue,
+};

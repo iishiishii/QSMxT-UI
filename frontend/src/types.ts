@@ -1,110 +1,117 @@
 export type SubjectRun = {
-  echoes: string[]
-}
+  echoes: string[];
+};
 
 export type SubjectRuns = {
-  [runNumber: string]: SubjectRun
-}
+  [runNumber: string]: SubjectRun;
+};
 
 export type SubjectSession = {
-  runs: SubjectRuns
-  sessionImages: string[]
-}
+  runs: SubjectRuns;
+  sessionImages: string[];
+};
 
-export type SubjectSessions =  {
-  [sessionNumber: string]: SubjectSession
-}
+export type SubjectSessions = {
+  [sessionNumber: string]: SubjectSession;
+};
 
 export type SubjectsTree = {
-  sessions: SubjectSessions 
-}
+  sessions: SubjectSessions;
+};
 
 export type Subject = {
-  subject: string, 
-  uploadFormat: SubjectUploadFormat, 
-  parameters: DicomConvertParameters, 
-  dataTree: SubjectsTree
-}
+  subject: string;
+  uploadFormat: SubjectUploadFormat;
+  parameters: DicomConvertParameters;
+  dataTree: SubjectsTree;
+};
 
 export enum SubjectUploadFormat {
-  DICOM = 'DICOM',
-  BIDS = 'BIDS',
-  NIFTI = 'Nifti'
+  DICOM = "DICOM",
+  BIDS = "BIDS",
+  NIFTI = "Nifti",
 }
 
 export enum JobStatus {
-  NOT_STARTED = 'NotStarted',
-  IN_PROGRESS = 'InProgress',
-  COMPLETE = 'Complete',
-  FAILED = 'Failed'
+  NOT_STARTED = "NotStarted",
+  IN_PROGRESS = "InProgress",
+  COMPLETE = "Complete",
+  FAILED = "Failed",
 }
 
 export enum JobType {
-  DICOM_SORT = 'Dicom Sort',
-  DICOM_CONVERT = 'Dicom Convert',
-  QSM = 'QSM Pipeline',
-  SEGMENTATION = 'Segmentation and Analysis',
-  BIDS_COPY = 'BIDS Copy'
+  DICOM_SORT = "Dicom Sort",
+  DICOM_CONVERT = "Dicom Convert",
+  QSM = "QSM Pipeline",
+  SEGMENTATION = "Segmentation and Analysis",
+  BIDS_COPY = "BIDS Copy",
 }
 
 export type DicomSortParameters = {
-  copyPath: string,
-  usePatientNames: boolean,
-  useSessionDates: boolean,
-  checkAllFiles: boolean
-}
+  copyPath: string;
+  usePatientNames: boolean;
+  useSessionDates: boolean;
+  checkAllFiles: boolean;
+};
 
 export type DicomConvertParameters = {
-  t2starwProtocolPatterns: string[],
-  t1wProtocolPatterns: string[],
-}
+  t2starwProtocolPatterns: string[];
+  t1wProtocolPatterns: string[];
+};
 
 export type QsmParameters = {
-  subjects: string[],
-  sessions: string[],
-  runs: string[],
-  pipelineConfig: string,
-}
+  subjects: string[];
+  sessions: string[];
+  runs: string[];
+  pipelineConfig: string;
+};
 
 export type SegementationParameters = {
-  subjects: string[],
-  linkedQsmJob: string
-}
+  subjects: string[];
+  linkedQsmJob: string;
+};
 
 export type BIDsCopyParameters = {
-  copyPath: string
-}
+  copyPath: string;
+};
 
-export type JobParameters = DicomSortParameters | DicomConvertParameters | QsmParameters | SegementationParameters | BIDsCopyParameters
+export type JobParameters =
+  | DicomSortParameters
+  | DicomConvertParameters
+  | QsmParameters
+  | SegementationParameters
+  | BIDsCopyParameters;
 
 export type Job = {
-  id: string,
-  type: JobType,
-  status: JobStatus,
-  createdAt: string,
-  startedAt: string | null,
-  finishedAt: string | null,
-  parameters: JobParameters,
-  error?: string
-}
+  id: string;
+  type: JobType;
+  status: JobStatus;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  parameters: JobParameters;
+  error?: string;
+};
 
-export type Cohorts = {[cohort: string]: {
-  description: string,
-  subjects: string[]
-}}
+export type Cohorts = {
+  [cohort: string]: {
+    description: string;
+    subjects: string[];
+  };
+};
 
 export type JobNotification = {
-  job: Job
-}
+  job: Job;
+};
 
 export type QsmResult = {
-  id: string,
-  description: string,
-  startedAt: string,
-  qsmFinishedAt?: string,
-  segmentationFinishedAt: string,
-  segmentationCreatedAt: string,
-  parameters: QsmParameters,
-  analysisResults: any,
-  qsmImages: string[]
-}
+  id: string;
+  description: string;
+  startedAt: string;
+  qsmFinishedAt?: string;
+  segmentationFinishedAt: string;
+  segmentationCreatedAt: string;
+  parameters: QsmParameters;
+  analysisResults: any;
+  qsmImages: string[];
+};

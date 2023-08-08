@@ -1,32 +1,32 @@
 import { JOBS_TABLE_NAME } from "../constants";
-import { Job, JobStatus, JobType } from "../types"
+import { Job, JobStatus, JobType } from "../types";
 import { runDatabaseQuery, runDatabaseQuery2 } from ".";
 
-const lowerCaseToCamelCase: {[key: string]: string} = {
-  createdat: 'createdAt',
-  startedat: 'startedAt',
-  finishedat: 'finishedAt',
-  linkedqsmjob: 'linkedQsmJob',
-  segmentationfinishedat: 'segmentationFinishedAt',
-  segmentationcreatedat: 'segmentationCreatedAt',
-  qsmfinishedat: 'qsmFinishedAt'
-}
+const lowerCaseToCamelCase: { [key: string]: string } = {
+  createdat: "createdAt",
+  startedat: "startedAt",
+  finishedat: "finishedAt",
+  linkedqsmjob: "linkedQsmJob",
+  segmentationfinishedat: "segmentationFinishedAt",
+  segmentationcreatedat: "segmentationCreatedAt",
+  qsmfinishedat: "qsmFinishedAt",
+};
 
 const formatRowsToJobs = (jobs: any[]): Job[] => {
-  return jobs.map(job => {
+  return jobs.map((job) => {
     const formattedJob: any = {};
-    Object.keys(job).forEach(key => {
-      if (key === 'parameters') {
+    Object.keys(job).forEach((key) => {
+      if (key === "parameters") {
         formattedJob.parameters = JSON.parse(job.parameters);
       } else if (key in lowerCaseToCamelCase) {
         formattedJob[lowerCaseToCamelCase[key]] = job[key];
       } else {
         formattedJob[key] = job[key];
       }
-    })
+    });
     return formattedJob as Job;
-  }) as Job[]
-}
+  }) as Job[];
+};
 
 const getIncompleteJobs = async (): Promise<Job[]> => {
   const query = `
@@ -36,7 +36,7 @@ const getIncompleteJobs = async (): Promise<Job[]> => {
   `;
   const response = await runDatabaseQuery(query);
   return formatRowsToJobs(response) as Job[];
-}
+};
 
 const getCompleteJobs = async (): Promise<Job[]> => {
   const query = `
@@ -46,30 +46,32 @@ const getCompleteJobs = async (): Promise<Job[]> => {
   `;
   const response = await runDatabaseQuery(query);
   return formatRowsToJobs(response) as Job[];
-}
+};
 
 const updateJob = async (job: Job): Promise<void> => {
-  const startedAt = job.startedAt ? `'${job.startedAt}'` : 'NULL'
-  const finishedAt = job.finishedAt ? `'${job.finishedAt}'` : 'NULL'
-  const error = job.error ? `'${job.error}'` : 'NULL'
+  const startedAt = job.startedAt ? `'${job.startedAt}'` : "NULL";
+  const finishedAt = job.finishedAt ? `'${job.finishedAt}'` : "NULL";
+  const error = job.error ? `'${job.error}'` : "NULL";
   const query = `
     UPDATE ${JOBS_TABLE_NAME} 
     SET status = '${job.status}', startedAt = ${startedAt}, finishedAt = ${finishedAt}, error = ${error}
     WHERE id = '${job.id}'
   `;
   await runDatabaseQuery2(query);
-}
+};
 
 const saveJob = async (job: Job) => {
-  const linkedQsmJob = job.linkedQsmJob ? `'${job.linkedQsmJob}'` : 'NULL';
-  const description = job.description ? `'${job.description}'` : 'NULL';
+  const linkedQsmJob = job.linkedQsmJob ? `'${job.linkedQsmJob}'` : "NULL";
+  const description = job.description ? `'${job.description}'` : "NULL";
   const { id, type, status, createdAt, parameters } = job;
   const query = `
     INSERT INTO ${JOBS_TABLE_NAME} (id, type, status, createdAt, parameters, linkedQsmJob, description)
-    VALUES ('${id}', '${type}', '${status}', '${createdAt}', '${JSON.stringify(parameters)}', ${linkedQsmJob}, ${description});
+    VALUES ('${id}', '${type}', '${status}', '${createdAt}', '${JSON.stringify(
+      parameters,
+    )}', ${linkedQsmJob}, ${description});
   `;
   await runDatabaseQuery(query);
-}
+};
 
 const getInProgressJobs = async () => {
   const query = `
@@ -77,9 +79,9 @@ const getInProgressJobs = async () => {
     FROM ${JOBS_TABLE_NAME} 
     WHERE status = '${JobStatus.IN_PROGRESS}'
   `;
-  const response =await runDatabaseQuery(query);
+  const response = await runDatabaseQuery(query);
   return formatRowsToJobs(response) as Job[];
-}
+};
 
 const getQsmResults = async () => {
   const query = `
@@ -90,7 +92,7 @@ const getQsmResults = async () => {
   `;
   const response = await runDatabaseQuery(query);
   return formatRowsToJobs(response) as Job[];
-}
+};
 
 export default {
   get: {
@@ -100,5 +102,5 @@ export default {
     qsmResults: getQsmResults,
   },
   update: updateJob,
-  save: saveJob
-}
+  save: saveJob,
+};

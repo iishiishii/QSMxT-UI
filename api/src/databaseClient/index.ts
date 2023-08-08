@@ -1,12 +1,12 @@
 import { DATABASE_FOLDER } from "../constants";
-import subjectsDto from './subjectsDto';
-import jobsDto from './jobsDto';
-import cohortsDto from './cohortsDto';
+import subjectsDto from "./subjectsDto";
+import jobsDto from "./jobsDto";
+import cohortsDto from "./cohortsDto";
 import logger from "../util/logger";
-import * as sqlite3 from 'sqlite3';
+import * as sqlite3 from "sqlite3";
 import path from "path";
 
-const databasepath = path.join(DATABASE_FOLDER, 'database.sqlite');
+const databasepath = path.join(DATABASE_FOLDER, "database.sqlite");
 const db: sqlite3.Database = new sqlite3.Database(databasepath);
 
 export const runDatabaseQuery2 = async (query: string): Promise<any> => {
@@ -20,12 +20,12 @@ export const runDatabaseQuery2 = async (query: string): Promise<any> => {
           resolve(null);
         }
       });
-    })
+    });
   } catch (err) {
     logger.red(query);
     throw err;
   }
-}
+};
 
 export const runDatabaseQuery = async (query: string): Promise<any> => {
   try {
@@ -38,12 +38,12 @@ export const runDatabaseQuery = async (query: string): Promise<any> => {
           resolve(rows);
         }
       });
-    })
+    });
   } catch (err) {
     logger.red(query);
     throw err;
   }
-}
+};
 
 const createSubjectsTable = async () => {
   await runDatabaseQuery2(`
@@ -54,8 +54,8 @@ const createSubjectsTable = async () => {
       parameters TEXT
     )
   `);
-  console.log('Created table subjects');
-}
+  console.log("Created table subjects");
+};
 
 const createCohortsTable = async () => {
   await runDatabaseQuery2(`
@@ -64,9 +64,9 @@ const createCohortsTable = async () => {
       description TEXT,
       PRIMARY KEY (cohort)
     )
-  `)
-  console.log('Created table cohorts');
-}
+  `);
+  console.log("Created table cohorts");
+};
 
 const createCohortSubjectsTable = async () => {
   await runDatabaseQuery2(`
@@ -77,9 +77,9 @@ const createCohortSubjectsTable = async () => {
       FOREIGN KEY (subject) REFERENCES subjects(subject),
       FOREIGN KEY (cohort) REFERENCES cohorts(cohort)
     )
-  `)
-  console.log('Created table cohortSubjects');
-}
+  `);
+  console.log("Created table cohortSubjects");
+};
 const createJobsTable = async () => {
   await runDatabaseQuery2(`
     CREATE TABLE IF NOT EXISTS jobs (
@@ -94,9 +94,9 @@ const createJobsTable = async () => {
       error TEXT,
       linkedQsmJob VARCHAR(100) REFERENCES jobs(id)
     )
-  `)
-  console.log('Created table jobs');
-}
+  `);
+  console.log("Created table jobs");
+};
 
 const setupDatabase = async () => {
   // await startDatabase();
@@ -104,11 +104,11 @@ const setupDatabase = async () => {
   await createCohortsTable();
   await createCohortSubjectsTable();
   await createJobsTable();
-}
+};
 
 export default {
   subjects: subjectsDto,
   jobs: jobsDto,
   cohorts: cohortsDto,
-  setup: setupDatabase
-}
+  setup: setupDatabase,
+};

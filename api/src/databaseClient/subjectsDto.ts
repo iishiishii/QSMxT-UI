@@ -1,15 +1,21 @@
 import { runDatabaseQuery, runDatabaseQuery2 } from ".";
 import { COHORT_SUBJECTS_TABLE_NAME, SUBJECT_TABLE_NAME } from "../constants";
-import { DicomConvertParameters, Subject, SubjectSessions, SubjectUploadFormat, SubjectsTree } from "../types";
+import {
+  DicomConvertParameters,
+  Subject,
+  SubjectSessions,
+  SubjectUploadFormat,
+  SubjectsTree,
+} from "../types";
 
 const formatRowsToSubjects = (subjects: any[]): Subject[] => {
-  return subjects.map(subject => ({
+  return subjects.map((subject) => ({
     subject: subject.subject,
     uploadFormat: subject.uploadFormat,
     parameters: JSON.parse(subject.parameters),
-    dataTree: JSON.parse(subject.dataTree)
-  })) as Subject[]
-}
+    dataTree: JSON.parse(subject.dataTree),
+  })) as Subject[];
+};
 
 const getAllSubjects = async (): Promise<Subject[]> => {
   const response = await runDatabaseQuery(`
@@ -17,7 +23,7 @@ const getAllSubjects = async (): Promise<Subject[]> => {
     ORDER BY subject ASC;
   `);
   return formatRowsToSubjects(response) as Subject[];
-}
+};
 
 const getAllSubjectsNames = async () => {
   const response = await runDatabaseQuery(`
@@ -25,15 +31,22 @@ const getAllSubjectsNames = async () => {
     ORDER BY subject ASC;
   `);
   // @ts-ignore
-  return response.map(row => row.subject);
-}
+  return response.map((row) => row.subject);
+};
 
-const saveSubject = async (subject: string, uploadFormat: SubjectUploadFormat, parameters: DicomConvertParameters | {}, dataTree: SubjectsTree) => {
+const saveSubject = async (
+  subject: string,
+  uploadFormat: SubjectUploadFormat,
+  parameters: DicomConvertParameters | {},
+  dataTree: SubjectsTree,
+) => {
   await runDatabaseQuery2(`
     INSERT INTO ${SUBJECT_TABLE_NAME} (subject, uploadFormat, parameters, dataTree)
-    VALUES ('${subject}', '${uploadFormat}', '${JSON.stringify(parameters)}', '${JSON.stringify(dataTree)}');
+    VALUES ('${subject}', '${uploadFormat}', '${JSON.stringify(
+      parameters,
+    )}', '${JSON.stringify(dataTree)}');
   `);
-}
+};
 
 const getSubjectByName = async (subject: string): Promise<Subject> => {
   const response = await runDatabaseQuery(`
@@ -41,10 +54,10 @@ const getSubjectByName = async (subject: string): Promise<Subject> => {
     WHERE subject = '${subject}';
   `);
   return formatRowsToSubjects(response)[0] as Subject;
-}
+};
 
 const deleteSubjectByName = async (subject: string): Promise<void> => {
-   await runDatabaseQuery2(`
+  await runDatabaseQuery2(`
     DELETE FROM ${COHORT_SUBJECTS_TABLE_NAME} 
     WHERE subject = '${subject}';
   `);
@@ -52,14 +65,14 @@ const deleteSubjectByName = async (subject: string): Promise<void> => {
     DELETE FROM ${SUBJECT_TABLE_NAME} 
     WHERE subject = '${subject}';
   `);
-}
+};
 
 export default {
   get: {
     all: getAllSubjects,
     allNames: getAllSubjectsNames,
-    byName: getSubjectByName
+    byName: getSubjectByName,
   },
   save: saveSubject,
-  delete: deleteSubjectByName
-}
+  delete: deleteSubjectByName,
+};

@@ -5,6 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+yarn.lock
 
 nodejs12
 
@@ -40,6 +41,7 @@ bower_components
 build/Release
 
 # Dependency directories
+node_modules/
 api/node_modules/
 frontend/node_modules/
 jspm_packages/

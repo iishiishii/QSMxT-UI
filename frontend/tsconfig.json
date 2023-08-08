@@ -1,29 +1,25 @@
 {
   "compilerOptions": {
-      "module": "commonjs",
-      "target": "es5",
-      "allowJs": true,
-      "checkJs": false,
-      "jsx": "react",
-      "outDir": "./build",
-      "rootDir": "./src",
-      "removeComments": true,
-      "noEmit": true,
-      "pretty": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "moduleResolution": "node",
-      "esModuleInterop": true
+    "module": "commonjs",
+    "target": "es5",
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "removeComments": true,
+    "noEmit": true,
+    "pretty": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
   "eslintConfig": {
     "rules": {
       "import/no-anonymous-default-export": "off"
     }
   },
-  "include": [
-      "./src/**/*"
-  ],
-  "exclude": [
-      "node_modules"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"]
 }

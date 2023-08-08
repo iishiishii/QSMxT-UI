@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Drawer, Spin, message } from "antd"
-import io from 'socket.io-client';
-import { API_URL } from '../../../core/constants';
+import React, { useEffect, useRef, useState } from "react";
+import { Drawer, Spin, message } from "antd";
+import io from "socket.io-client";
+import { API_URL } from "../../../core/constants";
 
 interface Props {
-  openOngoingLog: boolean,
-  setOpenOngoingLog: any
+  openOngoingLog: boolean;
+  setOpenOngoingLog: any;
 }
 
 const OngoingRunLogs = (props: Props) => {
@@ -15,24 +15,24 @@ const OngoingRunLogs = (props: Props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
-  const endRef = useRef(null)
+  const endRef = useRef(null);
 
   useEffect(() => {
     const socket = io(`${API_URL}/inProgress`);
-    socket.on('connect', () => {
+    socket.on("connect", () => {
       // setSocket(socket as any);
-      socket.on('data', (data) => {
+      socket.on("data", (data) => {
         setData(data);
       });
     });
     return () => {
-      console.log('socket');
+      console.log("socket");
       if (socket) {
         // console.log('Disconnecting')
         socket.disconnect();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     // @ts-ignore
@@ -40,34 +40,36 @@ const OngoingRunLogs = (props: Props) => {
   }, [data]);
 
   const renderBody = () => {
-    
-    return <div>
-      
-      {(data || '').split('\n').map(x => {
-        return <div>
-          {x}
-          <br />
-          </div>;
-      })}
-      <br />
-      {loading && <Spin size="large" />}
-    </div>
-  }
+    return (
+      <div>
+        {(data || "").split("\n").map((x) => {
+          return (
+            <div>
+              {x}
+              <br />
+            </div>
+          );
+        })}
+        <br />
+        {loading && <Spin size="large" />}
+      </div>
+    );
+  };
 
   return (
-    <Drawer 
-      title="Run Logs" 
+    <Drawer
+      title="Run Logs"
       size="large"
-      placement="right" 
+      placement="right"
       onClose={() => {
-        setOpenOngoingLog(false)
-      }} 
+        setOpenOngoingLog(false);
+      }}
       open={openOngoingLog}
     >
       {openOngoingLog ? renderBody() : <div />}
       <div ref={endRef} />
     </Drawer>
-  )
-}
+  );
+};
 
 export default OngoingRunLogs;

@@ -1,56 +1,91 @@
-import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Card, Input, Popover, Radio, Select, Steps, Typography } from 'antd';
-import React, { useContext, useState } from 'react';
-import apiClient from '../../../util/apiClient';
-import { Page, context } from '../../../util/context';
-import ContentCard from '../../../containers/ContentCard';
-import { SubjectUploadFormat } from '../../../types';
+import { QuestionCircleOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Input,
+  Popover,
+  Radio,
+  Select,
+  Steps,
+  Typography,
+} from "antd";
+import React, { useContext, useState } from "react";
+import apiClient from "../../../util/apiClient";
+import { Page, context } from "../../../util/context";
+import ContentCard from "../../../containers/ContentCard";
+import { SubjectUploadFormat } from "../../../types";
 
 const { Text } = Typography;
 
-const stepItems = [{ title: 'Data Type' }, { title: 'Configure' }, { title: 'Copy' }];
+const stepItems = [
+  { title: "Data Type" },
+  { title: "Configure" },
+  { title: "Copy" },
+];
 
-const uploadHelperText = <Text>
-  Data for subjects can be uploaded in either the<br />
-  BIDS or DICOM format. 
-</Text>
+const uploadHelperText = (
+  <Text>
+    Data for subjects can be uploaded in either the
+    <br />
+    BIDS or DICOM format.
+  </Text>
+);
 
-const patientNamesHelperText = <Text>
-  Use the DICOM 'PatientName' field rather than 'PatientID' to identify subjects
-</Text>
+const patientNamesHelperText = (
+  <Text>
+    Use the DICOM 'PatientName' field rather than 'PatientID' to identify
+    subjects
+  </Text>
+);
 
-const checkAllFilesHelperText = <Text>
-  Ignores the DICOM file extensions .dcm and .IMA and instead reads all files for valid<br/>
-  DICOM headers. This is useful if some of your DICOM files have unusual file extensions<br/> 
-  or none at all.
-</Text>
+const checkAllFilesHelperText = (
+  <Text>
+    Ignores the DICOM file extensions .dcm and .IMA and instead reads all files
+    for valid
+    <br />
+    DICOM headers. This is useful if some of your DICOM files have unusual file
+    extensions
+    <br />
+    or none at all.
+  </Text>
+);
 
-const t2wHelperText = <Text>
-  Patterns used to identify series acquired for QSM, which must be T2*-weighted.<br/>
-  These patterns will be used to match the 'ProtocolName' field.
-</Text>
+const t2wHelperText = (
+  <Text>
+    Patterns used to identify series acquired for QSM, which must be
+    T2*-weighted.
+    <br />
+    These patterns will be used to match the 'ProtocolName' field.
+  </Text>
+);
 
-const t1wHelperText = <Text>
-  Patterns used to identify T1-weighted series acquired for segmentation.<br/>
-  These patterns will be used to match the 'ProtocolName' field.
-</Text>
+const t1wHelperText = (
+  <Text>
+    Patterns used to identify T1-weighted series acquired for segmentation.
+    <br />
+    These patterns will be used to match the 'ProtocolName' field.
+  </Text>
+);
 
-const copyPathHelpererText = <Text>
-  The path to your data.
-</Text>
+const copyPathHelpererText = <Text>The path to your data.</Text>;
 
 const styles = {
-  smallHelpIcon: { color: '#1677ff', marginTop: 2, marginLeft: 5, fontSize: 13  },
-  flexBox: { display: 'flex', flexDirection: 'row' as 'row' }
-}
+  smallHelpIcon: {
+    color: "#1677ff",
+    marginTop: 2,
+    marginLeft: 5,
+    fontSize: 13,
+  },
+  flexBox: { display: "flex", flexDirection: "row" as "row" },
+};
 
 const defaultT2ProtocolPatterns = ["*t2starw*", "*qsm*"];
 const defaultT1ProtocolPatterns = ["*t1w*"];
 
 const optionPrompt = {
-  label: 'Type a value to enter...',
-  value: 'STUB'
-}
+  label: "Type a value to enter...",
+  value: "STUB",
+};
 
 const UploadDataCard: React.FC = () => {
   const { navigate } = useContext(context);
@@ -59,23 +94,39 @@ const UploadDataCard: React.FC = () => {
   const [usePatientNames, setUsePatientNames] = useState(false);
   const [useSessionDates, setUseSessionDates] = useState(false);
   const [checkAllFiles, setCheckAllFiles] = useState(false);
-  const [t2starwProtocolPattern, setT2starwProtocol] = useState(defaultT2ProtocolPatterns);
-  const [t1wProtocolPattern, setT1wProtocolPattern] = useState(defaultT1ProtocolPatterns);
+  const [t2starwProtocolPattern, setT2starwProtocol] = useState(
+    defaultT2ProtocolPatterns,
+  );
+  const [t1wProtocolPattern, setT1wProtocolPattern] = useState(
+    defaultT1ProtocolPatterns,
+  );
   const [t2Options, setT2Options]: [any, any] = useState([optionPrompt]);
-  const [t1Options, setT1Options]: [any, any]  = useState([optionPrompt]);
-  const [uploadPath, setUploadPath]: [string, (uploadPath: string) => void]  = useState('');
+  const [t1Options, setT1Options]: [any, any] = useState([optionPrompt]);
+  const [uploadPath, setUploadPath]: [string, (uploadPath: string) => void] =
+    useState("");
 
-  const badUploadPath = !!(uploadPath && !uploadPath.includes('neurodesktop-storage') && uploadPath.includes(':\\'));
+  const badUploadPath = !!(
+    uploadPath &&
+    !uploadPath.includes("neurodesktop-storage") &&
+    uploadPath.includes(":\\")
+  );
 
   const previousStep = () => {
     setStep(step - 1);
-  }
+  };
 
   const nextStep = async () => {
     if (step === 3) {
       let success = false;
       if (dataType === SubjectUploadFormat.DICOM) {
-        success = await apiClient.copyDicoms(uploadPath, usePatientNames, useSessionDates, checkAllFiles, t2starwProtocolPattern, t1wProtocolPattern);
+        success = await apiClient.copyDicoms(
+          uploadPath,
+          usePatientNames,
+          useSessionDates,
+          checkAllFiles,
+          t2starwProtocolPattern,
+          t1wProtocolPattern,
+        );
       }
       if (dataType === SubjectUploadFormat.BIDS) {
         success = await apiClient.copyBids(uploadPath);
@@ -86,22 +137,25 @@ const UploadDataCard: React.FC = () => {
       }
     } else {
       setStep(step + 1);
-      setUploadPath('');
+      setUploadPath("");
     }
-  }
+  };
 
-  const updateT2ProtocolOptions = (t2starwProtocolPattern: string[], input: string = '') => {
+  const updateT2ProtocolOptions = (
+    t2starwProtocolPattern: string[],
+    input: string = "",
+  ) => {
     const defaultOptions = defaultT2ProtocolPatterns
-      .filter(pattern => !t2starwProtocolPattern.includes(pattern))
-      .map(pattern => ({ label: pattern, value: pattern }));
+      .filter((pattern) => !t2starwProtocolPattern.includes(pattern))
+      .map((pattern) => ({ label: pattern, value: pattern }));
     if (input) {
       setT2Options([
         ...defaultOptions,
         {
           label: input,
-          value: input
-        }
-      ])
+          value: input,
+        },
+      ]);
     } else {
       if (defaultOptions.length) {
         setT2Options([optionPrompt, ...defaultOptions]);
@@ -109,39 +163,41 @@ const UploadDataCard: React.FC = () => {
         setT2Options([optionPrompt]);
       }
     }
-  }
+  };
 
   const onChangeT2Protocol = (input: string) => {
-    updateT2ProtocolOptions(t2starwProtocolPattern, input)
-  }
+    updateT2ProtocolOptions(t2starwProtocolPattern, input);
+  };
 
   const onSelectT2Protocol = (protocol: string) => {
-    if (protocol !== 'STUB') {
+    if (protocol !== "STUB") {
       const newProtocols = [...t2starwProtocolPattern, protocol];
       setT2starwProtocol(newProtocols);
       updateT2ProtocolOptions(newProtocols);
     }
-  }
+  };
 
   const onDeselectT2Protocol = (protocol: string) => {
-    const newProtocols = t2starwProtocolPattern
-      .filter(t2 => t2 !== protocol);
+    const newProtocols = t2starwProtocolPattern.filter((t2) => t2 !== protocol);
     setT2starwProtocol(newProtocols);
     updateT2ProtocolOptions(newProtocols);
-  }
+  };
 
-  const updateT1ProtocolOptions = (t1wProtocolPattern: string[], input: string = '') => {
+  const updateT1ProtocolOptions = (
+    t1wProtocolPattern: string[],
+    input: string = "",
+  ) => {
     const defaultOptions = defaultT1ProtocolPatterns
-      .filter(pattern => !t1wProtocolPattern.includes(pattern))
-      .map(pattern => ({ label: pattern, value: pattern }));
+      .filter((pattern) => !t1wProtocolPattern.includes(pattern))
+      .map((pattern) => ({ label: pattern, value: pattern }));
     if (input) {
       setT1Options([
         ...defaultOptions,
         {
           label: input,
-          value: input
-        }
-      ])
+          value: input,
+        },
+      ]);
     } else {
       if (defaultOptions.length) {
         setT1Options([optionPrompt, ...defaultOptions]);
@@ -149,113 +205,123 @@ const UploadDataCard: React.FC = () => {
         setT1Options([optionPrompt]);
       }
     }
-  }
-  
+  };
+
   const onChangeT1Protocol = (input: string) => {
-    updateT1ProtocolOptions(t1wProtocolPattern, input)
-  }
+    updateT1ProtocolOptions(t1wProtocolPattern, input);
+  };
 
   const onSelectT1Protocol = (protocol: string) => {
-    if (protocol !== 'STUB') {
+    if (protocol !== "STUB") {
       const newProtocols = [...t1wProtocolPattern, protocol];
       setT1wProtocolPattern(newProtocols);
       updateT1ProtocolOptions(newProtocols);
     }
-  }
+  };
 
   const onDeselectT1Protocol = (protocol: string) => {
-    const newProtocols = t1wProtocolPattern
-      .filter(t2 => t2 !== protocol);
-      setT1wProtocolPattern(newProtocols);
+    const newProtocols = t1wProtocolPattern.filter((t2) => t2 !== protocol);
+    setT1wProtocolPattern(newProtocols);
     updateT1ProtocolOptions(newProtocols);
-  }
-  
+  };
+
   const renderDataTypeStep = () => {
-    return <div>
-      <Text>Which type of subject data are you uploading?</Text>
-      <br />
-      <Radio.Group onChange={(e) => setDataType(e.target.value)} value={dataType}>
-        <Radio value={SubjectUploadFormat.DICOM}>DICOM</Radio>
-        <Radio value={SubjectUploadFormat.BIDS}>BIDS</Radio>
-        {/* <Radio value={SubjectDataType.NIFTI}>Nifti</Radio> */}
-      </Radio.Group>
-    </div>
-  }
+    return (
+      <div>
+        <Text>Which type of subject data are you uploading?</Text>
+        <br />
+        <Radio.Group
+          onChange={(e) => setDataType(e.target.value)}
+          value={dataType}
+        >
+          <Radio value={SubjectUploadFormat.DICOM}>DICOM</Radio>
+          <Radio value={SubjectUploadFormat.BIDS}>BIDS</Radio>
+          {/* <Radio value={SubjectDataType.NIFTI}>Nifti</Radio> */}
+        </Radio.Group>
+      </div>
+    );
+  };
 
   const renderDicomConfigureStep = () => {
-    return <div>
-      <div style={styles.flexBox}>
-        <Text>Use patient names?</Text>
-        <Popover title={null} content={patientNamesHelperText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
+    return (
+      <div>
+        <div style={styles.flexBox}>
+          <Text>Use patient names?</Text>
+          <Popover title={null} content={patientNamesHelperText}>
+            <QuestionCircleOutlined style={styles.smallHelpIcon} />
+          </Popover>
+        </div>
+        <Radio.Group
+          onChange={(e) => setUsePatientNames(e.target.value)}
+          value={usePatientNames}
+        >
+          <Radio.Button value={true}>Yes</Radio.Button>
+          <Radio.Button value={false}>No</Radio.Button>
+        </Radio.Group>
+        <br />
+        <br />
+        <div style={styles.flexBox}>
+          <Text>Check all files?</Text>
+          <Popover title={null} content={checkAllFilesHelperText}>
+            <QuestionCircleOutlined style={styles.smallHelpIcon} />
+          </Popover>
+        </div>
+        <Radio.Group
+          onChange={(e) => setCheckAllFiles(e.target.value)}
+          value={checkAllFiles}
+        >
+          <Radio.Button value={true}>Yes</Radio.Button>
+          <Radio.Button value={false}>No</Radio.Button>
+        </Radio.Group>
+        <br />
+        <br />
+        <div style={styles.flexBox}>
+          <Text>T2*-Weighted Protocol Pattern?</Text>
+          <Popover title={null} content={t2wHelperText}>
+            <QuestionCircleOutlined style={styles.smallHelpIcon} />
+          </Popover>
+        </div>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{ width: "100%" }}
+          placeholder="Please entere a protocol pattern..."
+          value={t2starwProtocolPattern}
+          options={t2Options}
+          onSearch={onChangeT2Protocol}
+          onSelect={onSelectT2Protocol}
+          onDeselect={onDeselectT2Protocol}
+        />
+        <br />
+        <br />
+        <div style={styles.flexBox}>
+          <Text>T1-Weighted Protocol Pattern?</Text>
+          <Popover title={null} content={t1wHelperText}>
+            <QuestionCircleOutlined style={styles.smallHelpIcon} />
+          </Popover>
+        </div>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{ width: "100%" }}
+          placeholder="Please entere a protocol pattern..."
+          value={t1wProtocolPattern}
+          options={t1Options}
+          onSearch={onChangeT1Protocol}
+          onSelect={onSelectT1Protocol}
+          onDeselect={onDeselectT1Protocol}
+        />
       </div>
-      <Radio.Group onChange={(e) => setUsePatientNames(e.target.value)} value={usePatientNames}>
-        <Radio.Button value={true}>Yes</Radio.Button>
-        <Radio.Button value={false}>No</Radio.Button>
-      </Radio.Group>
-      <br />
-      <br />
-      <div style={styles.flexBox}>
-        <Text>Check all files?</Text>
-        <Popover title={null} content={checkAllFilesHelperText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
-      </div>
-      <Radio.Group onChange={(e) => setCheckAllFiles(e.target.value)} value={checkAllFiles}>
-        <Radio.Button value={true}>Yes</Radio.Button>
-        <Radio.Button value={false}>No</Radio.Button>
-      </Radio.Group>
-      <br />
-      <br />
-      <div style={styles.flexBox}>
-        <Text>T2*-Weighted Protocol Pattern?</Text>
-        <Popover title={null} content={t2wHelperText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
-      </div>
-      <Select 
-        mode="multiple"
-        allowClear
-        style={{ width: '100%' }}
-        placeholder="Please entere a protocol pattern..."
-        value={t2starwProtocolPattern}
-        options={t2Options}
-        onSearch={onChangeT2Protocol}
-        onSelect={onSelectT2Protocol}
-        onDeselect={onDeselectT2Protocol}
-      />
-      <br />
-      <br />
-      <div style={styles.flexBox}>
-        <Text>T1-Weighted Protocol Pattern?</Text>
-        <Popover title={null} content={t1wHelperText} >
-          <QuestionCircleOutlined style={styles.smallHelpIcon} />
-        </Popover>
-      </div>
-      <Select 
-        mode="multiple"
-        allowClear
-        style={{ width: '100%' }}
-        placeholder="Please entere a protocol pattern..."
-        value={t1wProtocolPattern}
-        options={t1Options}
-        onSearch={onChangeT1Protocol}
-        onSelect={onSelectT1Protocol}
-        onDeselect={onDeselectT1Protocol}
-      />
-    </div>
-  }
+    );
+  };
 
   const renderBidsConfigureStep = () => {
-    return <div></div>
-  }
+    return <div></div>;
+  };
 
   const renderNiftiConfigureStep = () => {
-    return <div>
-      TODO
-    </div>
-  }
+    return <div>TODO</div>;
+  };
 
   const renderConfigureStep = () => {
     if (dataType === SubjectUploadFormat.DICOM) {
@@ -267,15 +333,15 @@ const UploadDataCard: React.FC = () => {
     if (dataType === SubjectUploadFormat.NIFTI) {
       return renderNiftiConfigureStep();
     }
-    return <div />
-  }
+    return <div />;
+  };
 
   const renderUploadStep = () => {
     return (
       <div>
         <div style={styles.flexBox}>
           <Text>Enter a file path to copy files from</Text>
-          <Popover title={null} content={copyPathHelpererText} >
+          <Popover title={null} content={copyPathHelpererText}>
             <QuestionCircleOutlined style={styles.smallHelpIcon} />
           </Popover>
         </div>
@@ -284,49 +350,45 @@ const UploadDataCard: React.FC = () => {
           onChange={(e) => setUploadPath(e.target.value)}
           value={uploadPath}
         />
-        {badUploadPath && 
+        {badUploadPath && (
           <div style={{ color: "red" }}>
-            Folder must be within your "neurodesktop-storage" folder 
+            Folder must be within your "neurodesktop-storage" folder
           </div>
-        }
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
-    <ContentCard 
-      title={'Upload Data'} 
-      width={530} 
-      Icon={UploadOutlined} 
-      helperText={uploadHelperText} 
+    <ContentCard
+      title={"Upload Data"}
+      width={530}
+      Icon={UploadOutlined}
+      helperText={uploadHelperText}
       loading={false}
     >
-      <Steps
-        size="small"
-        current={step - 1}
-        items={stepItems}
-      />
+      <Steps size="small" current={step - 1} items={stepItems} />
       <br />
       {step === 1 && renderDataTypeStep()}
       {step === 2 && renderConfigureStep()}
       {step === 3 && renderUploadStep()}
       <br />
-      <Button 
+      <Button
         disabled={step === 1}
         onClick={previousStep}
         style={{ marginRight: 1 }}
       >
         Previous
       </Button>
-      <Button 
-        type="primary" 
+      <Button
+        type="primary"
         disabled={step === 3 && (badUploadPath || !uploadPath)}
-        onClick={nextStep}>
-        {step !== 3 ? 'Next' : ' Finish'}
+        onClick={nextStep}
+      >
+        {step !== 3 ? "Next" : " Finish"}
       </Button>
     </ContentCard>
-
-  )
-}
+  );
+};
 
 export default UploadDataCard;

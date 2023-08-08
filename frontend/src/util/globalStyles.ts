@@ -1,22 +1,22 @@
 const flexBoxRowSpaceBetween = {
-  display: 'flex',
-  flexDirection: 'row' as 'row',
-  justifyContent: 'space-between'
-}
+  display: "flex",
+  flexDirection: "row" as "row",
+  justifyContent: "space-between",
+};
 
 const flexBoxRow = {
-  display: 'flex', 
-  flexDirection: 'row' as 'row'
-}
+  display: "flex",
+  flexDirection: "row" as "row",
+};
 
 const noTopMargin = {
-  marginTop: 0
-}
+  marginTop: 0,
+};
 
 const globalStyles = {
   flexBoxRowSpaceBetween,
   flexBoxRow,
-  noTopMargin
-}
+  noTopMargin,
+};
 
 export default globalStyles;

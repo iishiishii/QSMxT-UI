@@ -8,21 +8,14 @@
 
   You can install from https://nodejs.org/en/download/
 
-- yarn
 
 Install using
-
-```bash
-npm install --global yarn
-```
 
 ```bash
 $ node --version
 v12.13.0
 $ npm --version
 6.12.0
-$ yarn --version
-1.22.19
 ```
 
 ## sqlite3
@@ -39,7 +32,5 @@ npm install sqlite3 --build-from-source
 # Run
 
 ```bash
-cd frontend
 npm run start
 ```
-

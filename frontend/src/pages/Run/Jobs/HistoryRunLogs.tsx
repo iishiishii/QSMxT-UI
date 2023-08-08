@@ -1,20 +1,19 @@
-import { Drawer, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { API_URL } from '../../../core/constants';
-import axios from 'axios';
+import { Drawer, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import { API_URL } from "../../../core/constants";
+import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
 
 interface Props {
-  historyLogOpened: string | null,
-  setHistoryLogOpened: any
+  historyLogOpened: string | null;
+  setHistoryLogOpened: any;
 }
 
 const HistoryRunLogs: React.FC<Props> = (props: Props) => {
-
   const { historyLogOpened, setHistoryLogOpened } = props;
 
-  const [logs, setLogs] = useState('');
+  const [logs, setLogs] = useState("");
 
   useEffect(() => {
     const getLogs = async () => {
@@ -23,22 +22,26 @@ const HistoryRunLogs: React.FC<Props> = (props: Props) => {
         console.log(x.data);
         setLogs(x.data);
       } catch (err) {
-        setLogs('No logs available');
+        setLogs("No logs available");
       }
-    }
+    };
     getLogs();
-  }, [historyLogOpened])
-
+  }, [historyLogOpened]);
 
   const renderLogs = (logs: string) => {
-    return (logs).split('\n').map(x => {
-      return <div>
-        {x.toLowerCase().includes('error') ? <span style={{ color: 'red' }}>{x}</span> : x}
-        <br />
-        </div>;
-    })
-  }
-
+    return logs.split("\n").map((x) => {
+      return (
+        <div>
+          {x.toLowerCase().includes("error") ? (
+            <span style={{ color: "red" }}>{x}</span>
+          ) : (
+            x
+          )}
+          <br />
+        </div>
+      );
+    });
+  };
 
   const renderBody = () => {
     // let dateTime = new Date().toISOString();
@@ -58,20 +61,20 @@ const HistoryRunLogs: React.FC<Props> = (props: Props) => {
         </Title>
         {renderLogs(logs)}
       </div>
-    )
-  }
+    );
+  };
 
   return (
-    <Drawer 
-      title="Run Logs" 
+    <Drawer
+      title="Run Logs"
       size="large"
-      placement="right" 
-      onClose={() => setHistoryLogOpened(null)} 
+      placement="right"
+      onClose={() => setHistoryLogOpened(null)}
       open={!!historyLogOpened}
     >
       {!!historyLogOpened ? renderBody() : <div />}
     </Drawer>
-  )
-}
+  );
+};
 
 export default HistoryRunLogs;

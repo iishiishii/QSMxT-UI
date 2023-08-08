@@ -4,42 +4,49 @@ import { message } from "antd";
 import { API_URL } from "../core/constants";
 
 const axiosInstance = axios.create({
-  timeout: 10 * 1000
+  timeout: 10 * 1000,
 });
 
 const getCohorts = async (): Promise<Cohorts> => {
   try {
-    const getCohortPath = API_URL + '/cohorts';
+    const getCohortPath = API_URL + "/cohorts";
     const response = await axiosInstance.get(getCohortPath);
     return response.data as Cohorts;
   } catch (err) {
     message.error((err as any).message);
     return {};
   }
-}
+};
 
-const updateCohort = async (cohort: string, subjects: string[]): Promise<boolean> => {
+const updateCohort = async (
+  cohort: string,
+  subjects: string[],
+): Promise<boolean> => {
   const updateCohortsPath = API_URL + `/cohorts/${cohort}`;
   let updated = false;
   try {
     const response = await axiosInstance.patch(updateCohortsPath, {
-      subjects
+      subjects,
     });
     message.success(response.statusText);
     updated = true;
   } catch (err) {
-    message.error((err as any).message)
+    message.error((err as any).message);
   }
   return updated;
-}
+};
 
-const createCohort = async (cohort: string, cohortDescription: string): Promise<boolean> => {
+const createCohort = async (
+  cohort: string,
+  cohortDescription: string,
+): Promise<boolean> => {
   let created = false;
-  
-  const getCohortPath = API_URL + `/cohorts/${encodeURIComponent(cohort).replace(/'/g, "%27")}`;
+
+  const getCohortPath =
+    API_URL + `/cohorts/${encodeURIComponent(cohort).replace(/'/g, "%27")}`;
   try {
     const response = await axiosInstance.post(getCohortPath, {
-      cohortDescription
+      cohortDescription,
     });
     message.success(response.statusText);
     created = true;
@@ -48,7 +55,7 @@ const createCohort = async (cohort: string, cohortDescription: string): Promise<
     created = false;
   }
   return created;
-}
+};
 
 const deleteCohort = async (cohort: string): Promise<boolean> => {
   let deleted = false;
@@ -61,16 +68,16 @@ const deleteCohort = async (cohort: string): Promise<boolean> => {
     message.error((err as any).message);
   }
   return deleted;
-}
+};
 
 // TODO - fix any
 const getSubjects = async (): Promise<any> => {
-  const getSubjectsPath = API_URL + '/subjects';
+  const getSubjectsPath = API_URL + "/subjects";
   try {
     const response = await axiosInstance.get(getSubjectsPath, {
       headers: {
         // "Access-Control-Request-Private-Network": "true"
-      }
+      },
     });
     const data: any = response.data;
     return data as SubjectsTree;
@@ -78,16 +85,15 @@ const getSubjects = async (): Promise<any> => {
     message.error((err as any).message);
     return [];
   }
-}
+};
 
 // TODO - add subject deletion
 const deleteSubject = async (subject: string): Promise<boolean> => {
   const deleteSubjectPath = API_URL + `/subjects/${subject}`;
   try {
-    const response = await axiosInstance.delete(deleteSubjectPath, {
-    });
+    const response = await axiosInstance.delete(deleteSubjectPath, {});
     if (response.status === 200) {
-      message.success('Subject successfully deleted');
+      message.success("Subject successfully deleted");
       return true;
     } else {
       message.error(response.statusText);
@@ -97,40 +103,48 @@ const deleteSubject = async (subject: string): Promise<boolean> => {
     message.error((err as any).message);
     return false;
   }
-}
+};
 
 const getJobsQueue = async (): Promise<Job[]> => {
-  const getRunsPath = API_URL + '/jobs/queue';
-    try {
-    const response = await axiosInstance.get(getRunsPath, {
-      headers: {
-        // "Access-Control-Request-Private-Network": "true"
-      }
-    });
-    return response.data as Job[];
-  }  catch (err) {
-    message.error((err as any).message);
-    return [];
-  }
-}
-
-const getHistory = async (): Promise<Job[]> => {
-  const getRunsPath = API_URL + '/jobs/history';
+  const getRunsPath = API_URL + "/jobs/queue";
   try {
     const response = await axiosInstance.get(getRunsPath, {
       headers: {
         // "Access-Control-Request-Private-Network": "true"
-      }
+      },
     });
     return response.data as Job[];
-  }  catch (err) {
+  } catch (err) {
     message.error((err as any).message);
     return [];
   }
-}
+};
 
-const runQsmPipeline = async (sessions: string[], runs: string[], pipelineConfig: string, subjects: string[], cohorts: string[], createSegmentation: boolean, description: string): Promise<void> => {
-  const runQsmPath = API_URL + '/qsm/run';
+const getHistory = async (): Promise<Job[]> => {
+  const getRunsPath = API_URL + "/jobs/history";
+  try {
+    const response = await axiosInstance.get(getRunsPath, {
+      headers: {
+        // "Access-Control-Request-Private-Network": "true"
+      },
+    });
+    return response.data as Job[];
+  } catch (err) {
+    message.error((err as any).message);
+    return [];
+  }
+};
+
+const runQsmPipeline = async (
+  sessions: string[],
+  runs: string[],
+  pipelineConfig: string,
+  subjects: string[],
+  cohorts: string[],
+  createSegmentation: boolean,
+  description: string,
+): Promise<void> => {
+  const runQsmPath = API_URL + "/qsm/run";
   try {
     await axiosInstance.post(runQsmPath, {
       sessions,
@@ -139,49 +153,54 @@ const runQsmPipeline = async (sessions: string[], runs: string[], pipelineConfig
       subjects,
       cohorts,
       createSegmentation,
-      description
+      description,
     });
   } catch (err) {
     message.error((err as any).message);
   }
-}
+};
 
 const getQsmResults = async (): Promise<QsmResult[]> => {
-  const getQsmResultsUrl = API_URL + '/qsm/results';
+  const getQsmResultsUrl = API_URL + "/qsm/results";
   try {
     const response = await axiosInstance.get(getQsmResultsUrl, {
-      headers: {
-      }
+      headers: {},
     });
     return response.data;
   } catch (err) {
     message.error((err as any).message);
     return [];
   }
-}
+};
 
 const getStatus = async () => {
-  const getQsmResultsUrl = API_URL + '/status';
+  const getQsmResultsUrl = API_URL + "/status";
   const response = await axiosInstance.get(getQsmResultsUrl);
   return response.data as any;
-}
+};
 
 const copyBids = async (copyPath: string): Promise<boolean> => {
-  const uploadBidsUrl = API_URL + '/subjects/bids';
+  const uploadBidsUrl = API_URL + "/subjects/bids";
   try {
     await axiosInstance.post(uploadBidsUrl, {
-        copyPath
+      copyPath,
     });
     return true;
   } catch (err) {
     message.error((err as any).message);
     return false;
   }
-}
+};
 
-const copyDicoms = async (copyPath: string, usePatientNames: boolean, useSessionDates: boolean, 
-    checkAllFiles: boolean, t2starwProtocolPatterns: string[], t1wProtocolPatterns: string[]) => {
-  const uploadDicomsUrl = API_URL + '/subjects/dicom';
+const copyDicoms = async (
+  copyPath: string,
+  usePatientNames: boolean,
+  useSessionDates: boolean,
+  checkAllFiles: boolean,
+  t2starwProtocolPatterns: string[],
+  t1wProtocolPatterns: string[],
+) => {
+  const uploadDicomsUrl = API_URL + "/subjects/dicom";
   try {
     await axiosInstance.post(uploadDicomsUrl, {
       copyPath,
@@ -189,14 +208,14 @@ const copyDicoms = async (copyPath: string, usePatientNames: boolean, useSession
       useSessionDates,
       checkAllFiles,
       t2starwProtocolPatterns: JSON.stringify(t2starwProtocolPatterns),
-      t1wProtocolPatterns: JSON.stringify(t1wProtocolPatterns)
+      t1wProtocolPatterns: JSON.stringify(t1wProtocolPatterns),
     });
     return true;
   } catch (err) {
     message.error((err as any).message);
     return false;
   }
-}
+};
 
 const apiClient = {
   getStatus,
@@ -211,8 +230,7 @@ const apiClient = {
   runQsmPipeline,
   getQsmResults,
   copyBids,
-  getHistory
-}
-
+  getHistory,
+};
 
 export default apiClient;

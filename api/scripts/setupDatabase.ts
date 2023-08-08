@@ -1,30 +1,30 @@
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 const pool = new Pool({
-  user: 'qsmxt',
-  password: 'password',
-  host: 'localhost',
-  database: 'qsmxt'
+  user: "qsmxt",
+  password: "password",
+  host: "localhost",
+  database: "qsmxt",
 });
 
 const dropTables = async () => {
   await pool.query(`
     DROP TABLE IF EXISTS jobs;
   `);
-  console.log('Dropped table jobs');
+  console.log("Dropped table jobs");
   await pool.query(`
     DROP TABLE IF EXISTS cohortSubjects;
   `);
-  console.log('Dropped table cohortSubjects');
+  console.log("Dropped table cohortSubjects");
   await pool.query(`
     DROP TABLE IF EXISTS cohorts;
   `);
-  console.log('Dropped table cohorts');
+  console.log("Dropped table cohorts");
   await pool.query(`
     DROP TABLE IF EXISTS subjects;
   `);
-  console.log('Dropped table subjects');
-}
+  console.log("Dropped table subjects");
+};
 
 const createSubjectsTable = async () => {
   await pool.query(`
@@ -35,8 +35,8 @@ const createSubjectsTable = async () => {
       parameters TEXT
     )
   `);
-  console.log('Created table subjects');
-}
+  console.log("Created table subjects");
+};
 
 const createCohortsTable = async () => {
   await pool.query(`
@@ -45,9 +45,9 @@ const createCohortsTable = async () => {
       description TEXT,
       PRIMARY KEY (cohort)
     )
-  `)
-  console.log('Created table cohorts');
-}
+  `);
+  console.log("Created table cohorts");
+};
 
 const createCohortSubjectsTable = async () => {
   await pool.query(`
@@ -58,9 +58,9 @@ const createCohortSubjectsTable = async () => {
       FOREIGN KEY (subject) REFERENCES subjects(subject),
       FOREIGN KEY (cohort) REFERENCES cohorts(cohort)
     )
-  `)
-  console.log('Created table cohortSubjects');
-}
+  `);
+  console.log("Created table cohortSubjects");
+};
 
 // TODO - remove cohort
 const createJobsTable = async () => {
@@ -77,9 +77,9 @@ const createJobsTable = async () => {
       error TEXT,
       linkedQsmJob VARCHAR(100) REFERENCES jobs(id)
     )
-  `)
-  console.log('Created table jobs');
-}
+  `);
+  console.log("Created table jobs");
+};
 
 (async () => {
   await dropTables();
@@ -89,8 +89,4 @@ const createJobsTable = async () => {
   await createCohortSubjectsTable();
   await createJobsTable();
   process.exit();
-
-})()
-
-
-
+})();

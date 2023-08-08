@@ -1,12 +1,11 @@
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 const pool = new Pool({
-  user: 'user',
-  password: 'password',
-  host: 'localhost',
-  database: 'user'
+  user: "user",
+  password: "password",
+  host: "localhost",
+  database: "user",
 });
-
 
 // const getAllCohorts = async (): Promise<any> => {
 //   const x = await pool.query(`
@@ -26,6 +25,6 @@ const getAllCohorts = async (): Promise<any> => {
     GROUP BY A.cohort;
   `);
   console.log(x);
-}
+};
 
 getAllCohorts().then();

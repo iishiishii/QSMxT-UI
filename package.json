@@ -1,0 +1,95 @@
+{
+  "name": "qsmxt-ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^5.2.1",
+    "@niivue/niivue": "^0.28.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "antd": "^5.4.7",
+    "axios": "^0.27.2",
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
+    "decompress": "^4.2.1",
+    "directory-tree": "^3.3.0",
+    "express": "^4.18.1",
+    "fs-extra": "^11.1.0",
+    "history": "^5.3.0",
+    "jszip": "^3.10.1",
+    "moment": "^2.29.4",
+    "node-color-log": "^10.0.2",
+    "node-fetch": "^3.3.0",
+    "nodemon": "^2.0.20",
+    "open": "^8.4.2",
+    "pg": "^8.10.0",
+    "query-string": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "sqlite3": "^5.1.6",
+    "styled-components": "^6.0.0-rc.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3",
+    "uuid": "^8.3.2",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run start:server\" \"npm run start:ui\"",
+    "start:server": "cd api && npm run dev",
+    "start:ui": "cd frontend && react-scripts start",
+    "build": "react-scripts build",
+    "deploy": "npm run build && aws s3 rm s3://form-ui --recursive && aws s3 sync ./build s3://form-ui",
+    "deployDemo": "npm run build && aws s3 rm s3://qsmxt-ui --recursive && aws s3 sync ./build s3://qsmxt-ui",
+    "test": "react-scripts test",
+    "lint": "yarn && yarn prettier && yarn stylelint --allow-empty-input",
+    "lint:check": "yarn prettier:check && yarn stylelint:check --allow-empty-input",
+    "prettier": "prettier --write \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prettier:check": "prettier --check \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "stylelint": "yarn stylelint:check --fix",
+    "stylelint:check": "stylelint \"**/*.css\"",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/antd": "^1.0.0",
+    "@types/cors": "^2.8.12",
+    "@types/decompress": "^4.2.4",
+    "@types/express": "^4.17.13",
+    "@types/express-fileupload": "^1.4.1",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^18.7.16",
+    "@types/pg": "^8.6.6",
+    "@types/tail": "^2.2.1",
+    "@types/uuid": "^9.0.0",
+    "prettier": "^3.0.1",
+    "stylelint": "^15.10.2",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-recommended": "^13.0.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-prettier": "^4.0.2"
+  },
+  "proxy": "http://localhost:5000/"
+}

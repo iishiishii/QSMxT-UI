@@ -10,23 +10,30 @@ const getRunNumbersForSession = (sessionFiles: string[]): string[] => {
     if (runNumber) {
       runNumbers.add(runNumber as string);
     }
-  })
+  });
   return Array.from(runNumbers);
-}
+};
 
-const getEchoNumbersForRun = (sessionFiles: string[], runNumber: string): string[] => {
+const getEchoNumbersForRun = (
+  sessionFiles: string[],
+  runNumber: string,
+): string[] => {
   const echoNumbers: Set<string> = new Set();
   const echoNumberRegex = `(?<=run-${runNumber}_echo-)\\d*(?=_part)`;
   sessionFiles
-    .filter(file => file.includes(`run-${runNumber}_echo-`))
+    .filter((file) => file.includes(`run-${runNumber}_echo-`))
     .forEach((fileName: string) => {
-      const echoNumber = (new RegExp(echoNumberRegex, "g").exec(fileName) || [])[0]
+      const echoNumber = (new RegExp(echoNumberRegex, "g").exec(fileName) ||
+        [])[0];
       echoNumbers.add(echoNumber as string);
     });
   return Array.from(echoNumbers);
-}
+};
 
-const getRunsForSession = (subjectPath: string, sessionNumber: string): SubjectRuns => {
+const getRunsForSession = (
+  subjectPath: string,
+  sessionNumber: string,
+): SubjectRuns => {
   const runs: SubjectRuns = {};
   const runsPath = path.join(subjectPath, `./${sessionNumber}/anat`);
   if (fs.existsSync(runsPath)) {
@@ -36,47 +43,53 @@ const getRunsForSession = (subjectPath: string, sessionNumber: string): SubjectR
       const echoes = getEchoNumbersForRun(sessionFiles, runNumber);
       if (Object.keys(echoes).length) {
         runs[runNumber] = {
-          echoes
-        }
+          echoes,
+        };
       }
-    })
+    });
   }
   return runs;
-}
+};
 
-const getAllImagesForSession = (subjectPath: string, sessionNumber: string): string[] => {
+const getAllImagesForSession = (
+  subjectPath: string,
+  sessionNumber: string,
+): string[] => {
   const images: Set<string> = new Set();
   const imageRegex = `.*(?=\\.nii)`;
   const sessionsAnatPath = path.join(subjectPath, `./${sessionNumber}/anat`);
-  const sessionsExtraPath = path.join(subjectPath, `./${sessionNumber}/extra_data`);
+  const sessionsExtraPath = path.join(
+    subjectPath,
+    `./${sessionNumber}/extra_data`,
+  );
   if (fs.existsSync(sessionsAnatPath)) {
     const sessionAnatFiles = fs.readdirSync(sessionsAnatPath);
     // const runNumbers = getRunNumbersForSession(sessionFiles);
     sessionAnatFiles.forEach((fileName: string) => {
-      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0]
+      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0];
       images.add(imageName as string);
-    })
+    });
   }
   if (fs.existsSync(sessionsExtraPath)) {
     const sessionExtraFiles = fs.readdirSync(sessionsExtraPath);
     sessionExtraFiles.forEach((fileName: string) => {
-      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0]
+      const imageName = (new RegExp(imageRegex, "g").exec(fileName) || [])[0];
       images.add(imageName as string);
-    })
+    });
   }
-  console.log("images ", images)
+  console.log("images ", images);
   return Array.from(images);
-}
+};
 
 export const getSessionsForSubject = (subject: string): SubjectSessions => {
   const sessionsTree: SubjectSessions = {};
   const subjectPath = path.join(BIDS_FOLDER, `./${subject}`);
   const sessionNumbers = fs.readdirSync(subjectPath);
   sessionNumbers.forEach((sessionNumber: string) => {
-      sessionsTree[sessionNumber] = {
-        runs: getRunsForSession(subjectPath, sessionNumber),
-        sessionImages: getAllImagesForSession(subjectPath, sessionNumber)
-      }
-    });
+    sessionsTree[sessionNumber] = {
+      runs: getRunsForSession(subjectPath, sessionNumber),
+      sessionImages: getAllImagesForSession(subjectPath, sessionNumber),
+    };
+  });
   return sessionsTree;
-}
+};
