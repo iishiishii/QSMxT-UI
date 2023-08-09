@@ -111,6 +111,10 @@ const saveNewJob = async (job: Job) => {
   jobQueue = await database.jobs.get.incomplete();
 };
 
+const getStatus = async (jobId: string): Promise<JobStatus> => {
+  return (await database.jobs.get.status(jobId) as JobStatus);
+}
+
 const setJobToComplete = async (
   jobId: string,
   status: JobStatus,
@@ -166,7 +170,6 @@ const handleFailureLogger = async (
 ) => {
   logger.red(`Job ${id} failed`);
   logger.red(err);
-  fs.appendFileSync(logFilePath, `${err}\n`, { encoding: "utf-8" });
   await setJobToComplete(id, JobStatus.FAILED, err);
   await getLogFile(type, id, linkedQsmJob).then((path) => {
     if (path) {
@@ -174,6 +177,7 @@ const handleFailureLogger = async (
       fs.appendFileSync(logFilePath, logContents, { encoding: "utf-8" });
     }
   });
+  fs.appendFileSync(logFilePath, `${err}\n`, { encoding: "utf-8" });
   Promise.resolve();
 };
 
@@ -193,27 +197,31 @@ const runJob = async (jobId: string) => {
       .sortDicoms(parameters as DicomSortParameters)
       .then(async () => {
         handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
-        // qsmxt
-        //   .convertDicoms(parameters as DicomConvertParameters)
-        //   .then(async () => {
-        //     handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
-        //   })
-        //   .catch(async (err) => {
-        //     handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
-        //   });
       })
       .catch(async (err) => {
         handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
       });
   } else if (type === JobType.DICOM_CONVERT) {
-    jobPromise = qsmxt
-      .convertDicoms(parameters as DicomConvertParameters)
-      .then(async () => {
-        handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
-      })
-      .catch(async (err) => {
-        handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
-      });
+    await getStatus(linkedQsmJob as string).then((status) => {
+      logger.yellow(`Linked job ${jobId} has status ${status}`);
+      if (status === JobStatus.FAILED) {
+        logger.red(`............ Linked job ${linkedQsmJob} failed`)
+        handleFailureLogger(id, type, linkedQsmJob, logFilePath, "Sort dicom job failed, cannot convert dicoms");
+        return;
+      }
+      else if (status === JobStatus.COMPLETE) {
+        jobPromise = qsmxt
+        .convertDicoms(parameters as DicomConvertParameters)
+        .then(async () => {
+          handleSuccessLogger(id, type, linkedQsmJob, logFilePath);
+        })
+        .catch(async (err) => {
+          handleFailureLogger(id, type, linkedQsmJob, logFilePath, err);
+        });
+      }
+    }).catch((err) => {
+      logger.red(`Linked job ${linkedQsmJob} does not exist or query return ${err}`);
+    });
   } else if (type === JobType.QSM) {
     const { subjects, sessions, runs, pipelineConfig } =
       parameters as QsmParameters;

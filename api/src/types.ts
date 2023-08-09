@@ -58,6 +58,7 @@ export type DicomSortParameters = {
 export type DicomConvertParameters = {
   t2starwProtocolPatterns: string[];
   t1wProtocolPatterns: string[];
+  linkedSortJob: string;
   usePatientNames: boolean;
   useSessionDates: boolean;
   checkAllFiles: boolean;

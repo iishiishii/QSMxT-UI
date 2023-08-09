@@ -29,7 +29,7 @@ const convertDicoms = async (parameters: DicomConvertParameters) => {
   console.log("convertDicomCommand ", convertDicomCommand);
   fs.writeFileSync(
     logFilePath,
-    `Starting Dicom converting.\n` + `Command: ${convertDicomCommand}\n`,
+    `Dicom converting command: ${convertDicomCommand}\n`,
     { encoding: "utf-8" },
   );
 

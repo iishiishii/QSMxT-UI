@@ -83,6 +83,16 @@ const getInProgressJobs = async () => {
   return formatRowsToJobs(response) as Job[];
 };
 
+const getJobStatus = async (jobId: string) => {
+  const query = `
+    SELECT *
+    FROM ${JOBS_TABLE_NAME} 
+    WHERE id = '${jobId}'
+  `;
+  const response = await runDatabaseQuery(query);
+  return response[0].status as JobStatus;
+};
+
 const getQsmResults = async () => {
   const query = `
     SELECT A.id, A.description, A.startedAt, A.finishedAt AS qsmFinishedAt, B.finishedAt AS segmentationFinishedAt, B.createdat AS segmentationCreatedAt, A.parameters
@@ -100,6 +110,7 @@ export default {
     complete: getCompleteJobs,
     inProgess: getInProgressJobs,
     qsmResults: getQsmResults,
+    status: getJobStatus,
   },
   update: updateJob,
   save: saveJob,

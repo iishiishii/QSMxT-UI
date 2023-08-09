@@ -40,8 +40,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run start:server\" \"npm run start:ui\"",
-    "start:server": "cd api && npm run dev",
+    "start": "concurrently \"yarn start:server\" \"yarn start:ui\"",
+    "start:server": "cd api && yarn dev",
     "start:ui": "cd frontend && react-scripts start",
     "build": "react-scripts build",
     "deploy": "npm run build && aws s3 rm s3://form-ui --recursive && aws s3 sync ./build s3://form-ui",
