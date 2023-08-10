@@ -23,26 +23,6 @@ export const setupListeners = (
   reject: (reason?: any) => void,
   logFilePath: string | null = null,
 ) => {
-  process.stdout.on("data", (data) => {
-    const stringData = data.toString();
-    stringData.split("\n").forEach((line: string) => {
-      if (line.includes("ERROR:")) {
-        logger.red(line);
-        reject(new Error(line));
-      }
-      if (logFilePath) {
-        fs.appendFileSync(logFilePath, line + "\n", { encoding: "utf-8" });
-      }
-      if (line.includes(completionString)) {
-        resolve(null);
-      }
-      if (line.includes("ERROR:")) {
-        logger.red(line);
-        reject(new Error(line));
-      }
-    });
-  });
-
   process.stderr.on("data", (err: Buffer) => {
     logger.red("stderr " + err.toString());
     if (logFilePath) {
@@ -72,7 +52,7 @@ export const setupListeners = (
     );
     if (_code === 0 || _code === null) {
       _cleanupListeners(process);
-      resolve();
+      resolve(null);
     } else {
       if (logFilePath) {
         fs.appendFileSync(
@@ -88,6 +68,23 @@ export const setupListeners = (
         ),
       );
     }
+  });
+
+  process.stdout.on("data", (data) => {
+    const stringData = data.toString();
+    stringData.split("\n").forEach((line: string) => {
+      logger.yellow(line + "\n");
+      if (logFilePath) {
+        fs.appendFileSync(logFilePath, line + "\n", { encoding: "utf-8" });
+      }
+      if (line.includes("ERROR:")) {
+        logger.red(line);
+        reject(new Error(line));
+      }
+      if (line.includes(completionString)) {
+        resolve(null);
+      }
+    });
   });
 };
 
@@ -106,7 +103,7 @@ export const runQsmxtCommand = async (
     logger.yellow(`Running: "${command}"`);
   });
   // Kill the process after the command is executed.
-  process.kill();
+  // process.kill();
   return runQsm;
 };
 

@@ -131,7 +131,10 @@ const setJobToComplete = async (
   await updateJob(job);
   sockets.sendJobAsNotification(job);
   if ((jobQueue as Job[]).length) {
-    runJob((jobQueue as Job[])[0].id);
+    Promise.race([
+      waitForDuration(100000 * 60 * 60 * 24),
+      runJob((jobQueue as Job[])[0].id)
+    ])
   }
 };
 
@@ -181,6 +184,14 @@ const handleFailureLogger = async (
   Promise.resolve();
 };
 
+async function waitForDuration(duration: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, duration);
+  });
+}
+
 const runJob = async (jobId: string) => {
   const { id, type, parameters, linkedQsmJob } = await getJobById(jobId);
   let logFilePath: string = path.join(LOGS_FOLDER, `${id}.log`);
@@ -225,9 +236,8 @@ const runJob = async (jobId: string) => {
   } else if (type === JobType.QSM) {
     const { subjects, sessions, runs, pipelineConfig } =
       parameters as QsmParameters;
-    try {
-      fs.mkdirSync(path.join(QSM_FOLDER, id));
-    } catch (err) {}
+
+    fs.mkdirSync(path.join(QSM_FOLDER, id));
     jobPromise = qsmxt
       .runQsmPipeline(id, subjects, sessions, runs, pipelineConfig)
       .then(async () => {
@@ -286,7 +296,10 @@ const addJobToQueue = async (
   await saveNewJob(job);
   sockets.sendJobAsNotification(job);
   if ((jobQueue as Job[]).length === 1) {
-    runJob((jobQueue as Job[])[0].id);
+    Promise.race([
+      runJob((jobQueue as Job[])[0].id),
+      waitForDuration(100000 * 60 * 60 * 24),
+    ]);
   }
   return id;
 };
