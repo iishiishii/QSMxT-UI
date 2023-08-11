@@ -51,7 +51,7 @@ const getCompleteJobs = async (): Promise<Job[]> => {
 const updateJob = async (job: Job): Promise<void> => {
   const startedAt = job.startedAt ? `'${job.startedAt}'` : "NULL";
   const finishedAt = job.finishedAt ? `'${job.finishedAt}'` : "NULL";
-  const error = job.error ? `'${job.error}'` : "NULL";
+  const error = job.error ? `'${job.error.replace(/'/g, "''")}'` : "NULL";
   const query = `
     UPDATE ${JOBS_TABLE_NAME} 
     SET status = '${job.status}', startedAt = ${startedAt}, finishedAt = ${finishedAt}, error = ${error}

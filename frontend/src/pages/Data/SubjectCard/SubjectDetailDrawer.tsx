@@ -126,7 +126,7 @@ const SubjectDetailDrawer: React.FC<Props> = ({
         </Title>
         <Drawer />
         <Title style={{ marginTop: 10 }} level={5}>
-          Select the Echo Number:{" "}
+          Select an image:{" "}
         </Title>
         <Select
           value={anatImage}
