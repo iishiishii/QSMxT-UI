@@ -1,8 +1,15 @@
 import { Server, Socket } from "socket.io";
 import http from "http";
 import logger from "../util/logger";
-import fs from "fs";
+import fs, { WatchEventType } from "fs";
 import { Job } from "../types";
+import {
+  BIDS_FOLDER,
+  DICOMS_FOLDER,
+  LOGS_FOLDER,
+  QSM_FOLDER,
+} from "../constants";
+import path from "path";
 
 let io: Server | null = null;
 let notificationSocket: Socket | null = null;
@@ -17,20 +24,36 @@ let notificationNameSpace: any = null;
 
 let currentLogFile: any = null;
 
-const createInProgressSocket = (logFilePath: string) => {
+// https://stackoverflow.com/questions/54668122/read-file-in-node-js-while-it-is-opened-for-writing-by-another-software
+const createInProgressSocket = (logFile: string) => {
+  let logId = logFile.split("/")
+  let id = logId[logId.length - 1].split(".")[0];
+  const resultFolder = path.join(QSM_FOLDER, `/${id}`);
+  const logFilePath = path.join(resultFolder, `ALL.log`);
   currentLogFile = logFilePath;
+  logger.magenta("Creating In Progress Socket " + currentLogFile);
   inProgressNamespace.on("connection", (socket: any) => {
     logger.magenta('Connection recieved to "In Progress" Socket');
-    let interval: any = null;
-    interval = setInterval(() => {
-      // TODO - switch to watch file
-      const logData = fs.readFileSync(currentLogFile, { encoding: "utf-8" });
-      socket.emit("data", logData);
-    }, 1000);
-    socket.on("disconnect", () => {
-      logger.magenta('Disconnected from "In Progress" Socket');
-      clearInterval(interval);
-    });
+    let streamed = 0
+    function readFd() {
+      const fd = fs.openSync(currentLogFile, 'r')
+      const stream = fs.createReadStream(currentLogFile, {
+        fd,
+        encoding: 'utf8',
+        start: streamed
+      })
+      stream.on('data', function (chunk) {
+        streamed += chunk.length;
+        console.log("emit data ", new Date().toISOString(), "  ", chunk.toString())
+        socket.emit("receiveFile", chunk );
+      })
+    }
+
+      let interval = setInterval(readFd, 1000)
+      socket.on("disconnect", () => {
+        logger.magenta('Disconnected from "In Progress" Socket');
+        clearInterval(interval);
+      });
   });
 };
 
@@ -42,6 +65,7 @@ const createNotificationSocket = () => {
       backedUpNotifications.forEach((backedUpJob: Job) => {
         socket.emit("data", JSON.stringify({ job: backedUpJob }));
       });
+      console.log("emitted backed up notifications", backedUpNotifications.length)
       backedUpNotifications = [];
     }
     socket.on("disconnect", () => {

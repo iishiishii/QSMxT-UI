@@ -132,7 +132,7 @@ const setJobToComplete = async (
   sockets.sendJobAsNotification(job);
   if ((jobQueue as Job[]).length) {
     Promise.race([
-      waitForDuration(100000 * 60 * 60 * 24),
+      waitForDuration(1000 * 100 * 60 * 60),
       runJob((jobQueue as Job[])[0].id)
     ])
   }
@@ -298,7 +298,7 @@ const addJobToQueue = async (
   if ((jobQueue as Job[]).length === 1) {
     Promise.race([
       runJob((jobQueue as Job[])[0].id),
-      waitForDuration(100000 * 60 * 60 * 24),
+      waitForDuration(1000 * 100 * 60 * 60),
     ]);
   }
   return id;

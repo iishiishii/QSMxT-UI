@@ -13,35 +13,26 @@ const OngoingRunLogs = (props: Props) => {
 
   // const [socket, setSocket]: [any, any] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState("");
 
   const endRef = useRef(null);
 
   useEffect(() => {
     const socket = io(`${API_URL}/inProgress`);
-    socket.on("connect", () => {
-      // setSocket(socket as any);
-      socket.on("data", (data) => {
-        setData(data);
-      });
+    socket.on("receiveFile", function(data) {
+      console.log(new Date().toISOString() + " receiveFile ", data);
+      setData(data);
     });
-    return () => {
-      console.log("socket");
-      if (socket) {
-        // console.log('Disconnecting')
-        socket.disconnect();
-      }
-    };
-  }, []);
+    console.log(data)
 
-  useEffect(() => {
-    // @ts-ignore
-    endRef.current?.scrollIntoView();
-  }, [data]);
+  }, []);  
+
 
   const renderBody = () => {
     return (
       <div>
+        {loading && <Spin size="large" />}
+        <br />
         {(data || "").split("\n").map((x) => {
           return (
             <div>
@@ -50,8 +41,6 @@ const OngoingRunLogs = (props: Props) => {
             </div>
           );
         })}
-        <br />
-        {loading && <Spin size="large" />}
       </div>
     );
   };
@@ -67,7 +56,6 @@ const OngoingRunLogs = (props: Props) => {
       open={openOngoingLog}
     >
       {openOngoingLog ? renderBody() : <div />}
-      <div ref={endRef} />
     </Drawer>
   );
 };

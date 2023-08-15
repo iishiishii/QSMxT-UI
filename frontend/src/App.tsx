@@ -126,7 +126,7 @@ const App = () => {
       notificationSocket.on("connect", () => {
         console.log("Connected");
         notificationSocket.on("data", (data: string) => {
-          console.log(data);
+          // console.log("notifications ", data);
           const jobNotification: JobNotification = JSON.parse(data);
           handleJobNotification(jobNotification, navigate);
           fetchAllData();
