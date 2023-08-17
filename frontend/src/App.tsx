@@ -77,6 +77,7 @@ const App = () => {
   const [qsmResults, setQsmResults] = useState<QsmResult[] | null>(null);
   const [history, setHistory] = useState<Job[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [notification, setNotification] = useState<JobNotification>();
 
   const navigate = useNavigate();
 
@@ -128,7 +129,10 @@ const App = () => {
         notificationSocket.on("data", (data: string) => {
           // console.log("notifications ", data);
           const jobNotification: JobNotification = JSON.parse(data);
-          handleJobNotification(jobNotification, navigate);
+          if (jobNotification !== undefined) {
+            setNotification(jobNotification)
+            handleJobNotification(notification as JobNotification, navigate);
+          }
           fetchAllData();
         });
       });

@@ -1,15 +1,8 @@
 import { Server, Socket } from "socket.io";
 import http, { get } from "http";
 import logger from "../util/logger";
-import fs, { WatchEventType } from "fs";
+import fs from "fs";
 import { Job, JobType } from "../types";
-import {
-  BIDS_FOLDER,
-  DICOMS_FOLDER,
-  LOGS_FOLDER,
-  QSM_FOLDER,
-} from "../constants";
-import path from "path";
 import { getJobLogFile } from ".";
 
 let io: Server | null = null;
@@ -71,10 +64,6 @@ const createNotificationSocket = () => {
       backedUpNotifications.forEach((backedUpJob: Job) => {
         socket.emit("data", JSON.stringify({ job: backedUpJob }));
       });
-      console.log(
-        "emitted backed up notifications",
-        backedUpNotifications.length,
-      );
       backedUpNotifications = [];
     }
     socket.on("disconnect", () => {
