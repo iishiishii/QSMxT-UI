@@ -44,11 +44,9 @@ const SubjectDetailDrawer: React.FC<Props> = ({
   setOpen,
   session,
 }) => {
-  const [imageType, setImageType]: [any, any] = useState("mag");
   const [imageMetadata, setImageMetadata]: [any, any] = useState({});
   const [anatImage, setAnatImage] = useState(imageName[0]);
 
-  console.log("subject", subject.dataTree, anatImage);
   useEffect(() => {
     const getMetadata = async () => {
       const metadataUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${anatImage}.json`;
@@ -66,7 +64,6 @@ const SubjectDetailDrawer: React.FC<Props> = ({
 
   const renderImageAndDescriptions = () => {
     const imageUrl = `${API_URL}/bids/${subject.subject}/${session}/anat/${anatImage}.nii`;
-    console.log("image ", imageUrl);
     const columns = [
       {
         title: "Field",
@@ -91,7 +88,7 @@ const SubjectDetailDrawer: React.FC<Props> = ({
           NIfTI Image
         </Title>
         <div style={{ maxHeight: "680px" }}>
-          <NiiVue imageUrl={imageUrl} key={imageUrl} type={imageType} />
+          <NiiVue imageUrl={imageUrl} key={imageUrl} />
         </div>
         <br />
         <Title style={{ marginTop: 10 }} level={3}>

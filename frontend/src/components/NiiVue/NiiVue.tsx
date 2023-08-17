@@ -4,7 +4,7 @@ import React from "react";
 import { Slider, Typography } from "antd";
 interface Props {
   imageUrl: string;
-  type: "mag" | "phase" | "qsm";
+  type?: "mag" | "phase" | "qsm";
 }
 
 const { Title } = Typography;
@@ -17,9 +17,9 @@ const values: any = {
     increment: 5,
   },
   phase: {
-    min: null,
-    max: null,
-    increment: null,
+    min: -4.1415,
+    max: 4.1415,
+    increment: 0.1,
     defaultRange: [-3.1415, 3.1415],
   },
   qsm: {
@@ -31,7 +31,7 @@ const values: any = {
 };
 const nv = new Niivue();
 
-const NiiVue: React.FC<Props> = ({ imageUrl, type }) => {
+const NiiVue: React.FC<Props> = ({ imageUrl }) => {
   const canvas = useRef();
   const volumeList = [
     {
@@ -39,6 +39,7 @@ const NiiVue: React.FC<Props> = ({ imageUrl, type }) => {
     },
   ];
   const [layers, setLayers] = useState(nv.volumes);
+  const [imageType, setImageType] = useState("mag");
 
   nv.onImageLoaded = () => {
     setLayers([...nv.volumes]);
@@ -49,11 +50,16 @@ const NiiVue: React.FC<Props> = ({ imageUrl, type }) => {
       nv.attachToCanvas(canvas.current);
       await nv.loadVolumes(volumeList);
       setLayers([...nv.volumes]);
+      if (imageUrl.includes("phase")) {
+        setImageType("phase");
+      } else {
+        setImageType("mag");
+      }
     }
     fetchData();
   }, [imageUrl]);
 
-  const { max, min, increment, defaultRange } = values[type] as any;
+  const { max, min, increment, defaultRange } = values[imageType] as any;
 
   const [range, setRange] = useState(defaultRange);
 
@@ -70,7 +76,7 @@ const NiiVue: React.FC<Props> = ({ imageUrl, type }) => {
       <Title style={{ marginTop: 0 }} level={4}>
         Image Range
       </Title>
-      {type !== "phase" && (
+      {(
         <Slider
           step={increment}
           value={range}
