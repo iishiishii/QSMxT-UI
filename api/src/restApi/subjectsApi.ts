@@ -35,7 +35,10 @@ const uploadSubjectDicomData = async (request: Request, response: Response) => {
     useSessionDates: useSessionDates === "true",
     checkAllFiles: checkAllFiles === "true",
   };
-  const linkedSortJob = await jobHandler.addJobToQueue(JobType.DICOM_SORT, dicomSortParameters);
+  const linkedSortJob = await jobHandler.addJobToQueue(
+    JobType.DICOM_SORT,
+    dicomSortParameters,
+  );
 
   const dicomConvertParameters: DicomConvertParameters = {
     t2starwProtocolPatterns: JSON.parse(t2starwProtocolPatterns),
@@ -45,7 +48,11 @@ const uploadSubjectDicomData = async (request: Request, response: Response) => {
     useSessionDates: useSessionDates === "true",
     checkAllFiles: checkAllFiles === "true",
   };
-  await jobHandler.addJobToQueue(JobType.DICOM_CONVERT, dicomConvertParameters, linkedSortJob);
+  await jobHandler.addJobToQueue(
+    JobType.DICOM_CONVERT,
+    dicomConvertParameters,
+    linkedSortJob,
+  );
 
   response.statusMessage =
     "Successfully copied DICOMs. Starting sort and conversion jobs.";

@@ -23,7 +23,9 @@ export const setupListeners = (
   reject: (reason?: any) => void,
   logFilePath: string | null = null,
 ) => {
-  logger.yellow(logFilePath ? `Logging to ${logFilePath}` : "No log file path provided")
+  logger.yellow(
+    logFilePath ? `Logging to ${logFilePath}` : "No log file path provided",
+  );
 
   process.stderr.on("data", (err: Buffer) => {
     logger.red("stderr " + err.toString());
@@ -101,7 +103,7 @@ export const runQsmxtCommand = async (
 
   let runQsm: Promise<void> = new Promise((resolve, reject) => {
     setupListeners(process, completionString, resolve, reject, logFilePath);
-    logger.yellow( new Date().toISOString() + `Running: "${command}"`);
+    logger.yellow(new Date().toISOString() + `Running: "${command}"`);
   });
   // Kill the process after the command is executed.
   // process.kill();

@@ -1,6 +1,4 @@
 {
-  "ignore": [
-    "public/**"
-  ],
+  "ignore": ["public/**"],
   "ext": "ts"
 }
