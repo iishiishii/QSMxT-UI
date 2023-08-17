@@ -19,11 +19,10 @@ const OngoingRunLogs = (props: Props) => {
 
   useEffect(() => {
     const socket = io(`${API_URL}/inProgress`);
-    socket.on("receiveFile", function (data) {
-      console.log(new Date().toISOString() + " receiveFile ", data);
-      setData(data);
+    socket.on("receiveFile", function (log) {
+      console.log(new Date().toISOString() + " receiveFile ", log);
+      setData(data + log);
     });
-    console.log(data);
   }, []);
 
   const renderBody = () => {
